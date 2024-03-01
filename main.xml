@@ -137,6 +137,7 @@
         <hook source_file="lib/managers/group_ai_states/groupaistatebase" file="GroupAIStateBase.lua"/>
         <hook source_file="lib/managers/mission/elementlookattrigger" file="ElementLookAtTrigger.lua"/>
         <hook source_file="lib/managers/menu/menucomponentmanager" file="LoadLastLevelButton.lua"/>
+        <hook source_file="core/lib/managers/coreaidatamanager" file="CoreAIDataManager.lua"/>
     </Hooks>
     <Options build_menu="false" early_post_init="true">
         <options>                

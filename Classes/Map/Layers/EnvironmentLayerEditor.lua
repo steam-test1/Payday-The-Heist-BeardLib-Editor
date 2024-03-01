@@ -43,7 +43,7 @@ function EnvLayer:loaded_continents()
         end
     end
 	self:_load_wind(data.wind)
-	self:_load_effects(data.effects)
+	-- self:_load_effects(data.effects)
 	self:_load_environment_areas()
 	self:_load_dome_occ_shapes(data.dome_occ_shapes)
 	self:_load_cubemaps(data.cubemap_gizmos)
