@@ -491,11 +491,6 @@ function StaticEditor:update_positions()
         elseif unit:mission_element() and self:GetPart("mission")._current_script then
             self:GetPart("mission")._current_script:update_positions(unit:position(), unit:rotation())
         end
-        for _, unit in pairs(self:selected_units()) do
-            if alive(unit) and unit:editable_gui() then
-                unit:editable_gui():set_blend_mode(unit:editable_gui():blend_mode())
-            end
-        end
         for _, editor in pairs(self._editors) do
             if editor.update_positions then
                 editor:update_positions(unit)
