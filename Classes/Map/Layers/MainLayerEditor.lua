@@ -470,8 +470,7 @@ function MainLayerEditor:add_new_mission_script()
 
        mission._missions[cname][name] = mission._missions[cname][name] or {
            activate_on_parsed = true,
-           elements = {},
-           instances = {}   
+           elements = {}
        }
        local data = clone(mission._missions[cname][name])
        data.name = name

@@ -1429,14 +1429,6 @@ function Static:delete_selected(item)
 
     local should_reload = #self._selected_units < 10
 
-    -- Delete instances
-    if self:selected_unit():fake() or #self._selected_units > 1 then
-        self:GetPart("instances"):delete_instances()
-        if should_reload then
-            self:GetPart("select"):get_menu("instance"):reload()
-        end
-    end
-
     for _, unit in pairs(self._selected_units) do
         if alive(unit) then
             if not unit:fake() then
