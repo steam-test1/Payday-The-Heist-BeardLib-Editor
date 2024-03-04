@@ -92,15 +92,15 @@ function AiDataManager:clear()
 	self:_setup()
 end
 function AiDataManager:save_data()
-	local t = CoreTable.deep_clone(self._data)
-	for name, path in pairs(t.patrol_paths) do
-		for i, point in ipairs(path.points) do
-			point.position = point.unit:position()
-			point.rotation = point.unit:rotation()
-			point.unit = nil
-		end
-	end
-	return t
+	-- local t = CoreTable.deep_clone(self._data)
+	-- for name, path in pairs(t.patrol_paths) do
+	-- 	for i, point in ipairs(path.points) do
+	-- 		point.position = point.unit:position()
+	-- 		point.rotation = point.unit:rotation()
+	-- 		point.unit = nil
+	-- 	end
+	-- end
+	-- return t
 end
 function AiDataManager:load_data(data)
 	if not data then

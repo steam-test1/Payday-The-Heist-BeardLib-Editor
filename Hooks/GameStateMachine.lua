@@ -6,22 +6,21 @@ Hooks:PostHook(GameStateMachine, "init", "BeardLibEditorGameStateInit", function
 	local ingame_waiting_for_respawn
 	local ingame_lobby
 	local ingame_lobby_func
-	for name in pairs(self._transitions) do
-		local state = self._states[name] 
-		if name == "ingame_lobby_menu" then
+	for state in pairs(self._transitions) do
+		if state._name == "ingame_lobby_menu" then
 			ingame_lobby = state
-			ingame_lobby_func = state.default_transition
+			ingame_lobby_func = callback(nil, state, "default_transition")
 		end
-		if name == "ingame_waiting_for_respawn" then
+		if state._name == "ingame_waiting_for_respawn" then
 			ingame_waiting_for_respawn = state
 		end
-		if name == "ingame_waiting_for_players" then
+		if state._name == "ingame_waiting_for_players" then
 			ingame_waiting_for_players = state
-			ingame_waiting_for_players_func = state.default_transition
+			ingame_waiting_for_players_func = callback(nil, state, "default_transition")
 		end
-		if name == "editor" then
+		if state._name == "editor" then
 			editor = state
-			editor_func = state.default_transition
+			editor_func = callback(nil, state, "default_transition")
 		end
 	end
 	if editor and ingame_waiting_for_players and ingame_waiting_for_respawn and ingame_lobby then
