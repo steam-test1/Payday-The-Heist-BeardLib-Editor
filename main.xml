@@ -67,7 +67,6 @@
             <class file="GeneralToolEditor.lua"/>
             <class file="DebugToolEditor.lua"/>
             <class file="WorldCamerasToolEditor.lua"/>
-            <class file="HUDCombatDebug.lua"/>
             <classes directory="ParticleEditor">
                 <class file="ParticleEditor.lua"/>
             </classes>

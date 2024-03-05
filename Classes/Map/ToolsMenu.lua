@@ -7,7 +7,6 @@ function ToolsMenu:init(parent, menu)
         debug = DebugToolEditor:new(self),
         world_cameras = WorldCamerasToolEditor:new(self)
     }
-    self._combat_debug = HUDCombatDebug:new()
 end
 
 function ToolsMenu:get_tool(name)
@@ -52,11 +51,6 @@ function ToolsMenu:destroy()
             editor:destroy()
         end
     end
-
-    if self._combat_debug then
-        self._combat_debug:clean_up()
-        self._combat_debug = nil
-    end
 end
 
 
@@ -91,7 +85,6 @@ end
 
 local elements = {"ElementAreaTrigger", "ElementAreaReportTrigger", "ElementLookAtTrigger"}
 function ToolsMenu:disabled_update(t, dt)
-    self._combat_debug:update(t, dt)
     if self._draw_triggers then
         for _, script in pairs(managers.mission:scripts()) do
             for _, trigger in pairs(elements) do
@@ -140,8 +133,4 @@ end
 
 function ToolsMenu:refresh()
     self.tools.general:build_menu()
-end
-
-function ToolsMenu:set_combat_debug(enabled)
-    self._combat_debug:set_enabled(enabled)
 end
