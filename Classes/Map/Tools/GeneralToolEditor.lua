@@ -2,8 +2,8 @@ GeneralToolEditor = GeneralToolEditor or class(ToolEditor)
 
 local difficulty_ids = {"easy", "normal", "hard", "overkill", "overkill_145"}
 local difficulty_loc = {
-	"menu_difficulty_easy",
-    "menu_difficulty_normal",
+    "menu_difficulty_easy",
+	"menu_difficulty_normal",
 	"menu_difficulty_hard",
 	"menu_difficulty_overkill",
 	"menu_difficulty_overkill_145"
@@ -58,19 +58,19 @@ function GenTool:open_editor(editor)
     managers.editor:set_enabled()
 end
 
-function GenTool:pause_game(item) 
+function GenTool:pause_game(item)
     local paused = item:Value()
-    Application:set_pause(paused) 
+    Application:set_pause(paused)
     SoundDevice:set_rtpc("ingame_sound", paused and 0 or 1)
 end
 
-function GenTool:set_mission_filter(item) 
+function GenTool:set_mission_filter(item)
     local filter = item:Value()
     Global.current_mission_filter = filter > 0 and filter or nil
     managers.mission:set_mission_filter({Global.current_mission_filter})
 end
 
-function GenTool:mute_music(item) 
+function GenTool:mute_music(item)
     local mute = item:Value()
 
 	if mute then
@@ -80,13 +80,13 @@ function GenTool:mute_music(item)
 	end
 end
 
-function GenTool:set_game_speed(item) 
+function GenTool:set_game_speed(item)
     local value = item:Value()
 	TimerManager:pausable():set_multiplier(value)
 	TimerManager:game_animation():set_multiplier(value)
 end
 
-function GenTool:set_difficulty(item) 
+function GenTool:set_difficulty(item)
     local difficulty = item:Value()
     Global.game_settings.difficulty = difficulty_ids[difficulty] or "normal"
     tweak_data.character:init(tweak_data)
@@ -136,7 +136,7 @@ function GenTool:build_level_breakdown()
             for name, data in pairs(managers.mission._missions[continent]) do
                 local elements = data.elements and #data.elements or 0
                 local instances = data.instances and #data.instances or 0
-    
+
                 elements_group:divider(name, {text = name..": "..elements})
                 total_elements = total_elements + elements
                 total_instances = total_instances + instances

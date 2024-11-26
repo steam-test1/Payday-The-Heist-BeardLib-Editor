@@ -38,7 +38,6 @@ function ProjectLevelEditor:build_menu(menu, data)
     menu:textbox("OutroEvent", up, table.concat(data.outro_event, ","))
 
     menu:tickbox("TeamAiOff", up, data.team_ai_off)
-    menu:tickbox("RetainBags", up, data.repossess_bags)
     menu:tickbox("PlayerInvulnerable", up, data.player_invulnerable)
 
     local icon_group = menu:divgroup("LoadingTexture", {border_position_below_title = true, private = {size = 22}})

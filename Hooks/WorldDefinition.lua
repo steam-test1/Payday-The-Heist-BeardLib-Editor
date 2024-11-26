@@ -463,7 +463,7 @@ function WorldDef:init_done()
 	managers.worlddefinition._world_data.camera_bookmarks = managers.worlddefinition._world_data.camera_bookmarks or {}
 	managers.editor:load_continents(self._continent_definitions)
 	managers.editor:load_camera_location(self._world_data.camera_bookmarks)
-	local i = 1 
+	local i = 1
 	for continent, data in pairs(self._continent_definitions) do
 		if self._continents[continent].base_id then
 			i = math.max(self._start_id / self._continents[continent].base_id)
@@ -472,7 +472,7 @@ function WorldDef:init_done()
 	for continent, data in pairs(self._continent_definitions) do
 		if not self._continents[continent].base_id then
 			self._continents[continent].base_id = self._start_id * i
-			i = i + 1			
+			i = i + 1
 		end
 	end
 	BLE:SetLoadingText("Done Initializing World Definition")
@@ -601,7 +601,7 @@ function WorldDef:_create_ai_editor_unit(data, offset)
 	return unit
 end
 
-function WorldDef:create_unit(data, type)		
+function WorldDef:create_unit(data, type)
 	local offset = Vector3()
 	local unit
 	if type == Idstring("wire") then
@@ -610,14 +610,14 @@ function WorldDef:create_unit(data, type)
 		unit = self:_create_ai_editor_unit(data, offset)
 	else
 		unit = self:_create_statics_unit(data, offset)
-	end 
+	end
 	if unit then
 		self:add_unit(unit)
 	end
 	return unit
 end
 
-function WorldDef:_setup_editor_unit_data(unit, data)		
+function WorldDef:_setup_editor_unit_data(unit, data)
 	local ud = unit:unit_data()
 	ud.name_id = data.name_id
 	ud.name = data.name
@@ -708,7 +708,7 @@ function WorldDef:make_unit(data, offset)
 		self._all_names[name] = self._all_names[name] or 0
 		self._all_names[name] = self._all_names[name] + 1
 	end
-	if alive(unit) then	
+	if alive(unit) then
 		self:assign_unit_data(unit, data)
 		self._statics[unit:key()] = data
 	end
@@ -718,7 +718,7 @@ end
 function WorldDef:assign_unit_data(unit, data)
 	if not unit:unit_data() then
 		BLE:log("Unit with name " .. tostring(unit:name()) .. " doesn't have Unit Data!")
-		return 
+		return
 	end
 
 	if data.instance then

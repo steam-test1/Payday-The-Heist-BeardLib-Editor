@@ -49,7 +49,7 @@ function MissionElementUnit:init(unit)
     }) 
     self._text = self._ws:panel():text({
         render_template = "OverlayVertexColorTextured",
-        font = "fonts/font_fortress_22",
+        font = tweak_data.menu.pd2_large_font,
         font_size = font_size,
         w = iconsize / 2,
         h = font_size,

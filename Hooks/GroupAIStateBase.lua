@@ -1,58 +1,79 @@
--- if not Global.editor_mode then
--- 	return
--- end
+if not Global.editor_mode then
+	return
+end
 
--- local F = table.remove(RequiredScript:split("/"))
+local F = table.remove(RequiredScript:split("/"))
 
--- if F == "groupaistatebase" then
---     Hooks:PostHook(GroupAIStateBase, "_init_misc_data", "EditorGroupAIInit", function(self)
---         self._enemies_spawned_assault = 0
---         self._enemies_spawned_lifetime = 0
---         self._enemies_in_level = 0
---         self._enemies_killed_assault = 0
---         self._enemies_killed_lifetime = 0
---     end)
+if F == "groupaistatebase" then
+    Hooks:PostHook(GroupAIStateBase, "_init_misc_data", "EditorGroupAIInit", function(self)
+        self._enemies_spawned_assault = 0
+        self._enemies_spawned_lifetime = 0
+        self._enemies_in_level = 0
+        self._enemies_killed_assault = 0
+        self._enemies_killed_lifetime = 0
+        self._groups = {}
+    end)
 
---     Hooks:PostHook(GroupAIStateBase, "update", "EditorGroupAISpawns", function(self, use_last)
---         if not self._task_data then
---             return
---         end
-        
---         local force_spawned = math.max((self._task_data.assault.force_spawned or 0) - self._enemies_spawned_assault, 0)
---         local enemies = self:_count_police_force("assault")
---         local killed = math.max(self._enemies_in_level -  enemies, 0)
+    function GroupAIStateBase:_count_police_force(task_name)
+        local amount = 0
 
---         self._enemies_spawned_lifetime = self._enemies_spawned_lifetime + force_spawned
---         self._enemies_spawned_assault = self._task_data.assault.force_spawned or 0
+        if task_name == "recon" or task_name == "assault" then
+            for group_id, group in pairs(self._groups) do
+                if group.objective.type == "assault_area" or group.objective.type == "recon_area" then
+                    amount = amount + (group.has_spawned and group.size or group.initial_size)
+                end
+            end
+        elseif task_name == "reenforce" then
+            for group_id, group in pairs(self._groups) do
+                if group.objective.type == "reenforce_area" then
+                    amount = amount + (group.has_spawned and group.size or group.initial_size)
+                end
+            end
+        end
 
---         self._enemies_killed_assault = self._enemies_killed_assault + killed
---         self._enemies_killed_lifetime = self._enemies_killed_lifetime + killed
---         self._enemies_in_level = enemies
---     end)
+        return amount
+    end
 
---     function GroupAIStateBase:enemies_spawned_lifetime()
---         return self._enemies_spawned_lifetime
---     end
+    Hooks:PostHook(GroupAIStateBase, "update", "EditorGroupAISpawns", function(self, use_last)
+        if not self._task_data then
+            return
+        end
 
---     function GroupAIStateBase:enemies_spawned_in_current_assault()
---         return self._enemies_spawned_assault
---     end
+        local force_spawned = math.max((self._task_data.assault.force_spawned or 0) - self._enemies_spawned_assault, 0)
+        local enemies = self:_count_police_force("assault")
+        local killed = math.max(self._enemies_in_level -  enemies, 0)
 
---     function GroupAIStateBase:enemies_killed_lifetime()
---         return self._enemies_killed_lifetime
---     end
+        self._enemies_spawned_lifetime = self._enemies_spawned_lifetime + force_spawned
+        self._enemies_spawned_assault = self._task_data.assault.force_spawned or 0
 
---     function GroupAIStateBase:enemies_killed_in_current_assault()
---         return self._enemies_killed_assault
---     end
+        self._enemies_killed_assault = self._enemies_killed_assault + killed
+        self._enemies_killed_lifetime = self._enemies_killed_lifetime + killed
+        self._enemies_in_level = enemies
+    end)
 
---     function GroupAIStateBase:enemies_in_level()
---         return self._enemies_in_level
---     end
+    function GroupAIStateBase:enemies_spawned_lifetime()
+        return self._enemies_spawned_lifetime
+    end
 
--- elseif F == "groupaistatebesiege" then
---     Hooks:PostHook(GroupAIStateBesiege, "_begin_assault_task", "EditorBesiegeReset", function(self, assault_areas)
---         self._enemies_spawned_assault = 0
---         self._enemies_killed_assault = 0
---     end)
--- end
+    function GroupAIStateBase:enemies_spawned_in_current_assault()
+        return self._enemies_spawned_assault
+    end
+
+    function GroupAIStateBase:enemies_killed_lifetime()
+        return self._enemies_killed_lifetime
+    end
+
+    function GroupAIStateBase:enemies_killed_in_current_assault()
+        return self._enemies_killed_assault
+    end
+
+    function GroupAIStateBase:enemies_in_level()
+        return self._enemies_in_level
+    end
+
+elseif F == "groupaistatebesiege" then
+    Hooks:PostHook(GroupAIStateBesiege, "_begin_assault_task", "EditorBesiegeReset", function(self, assault_areas)
+        self._enemies_spawned_assault = 0
+        self._enemies_killed_assault = 0
+    end)
+end

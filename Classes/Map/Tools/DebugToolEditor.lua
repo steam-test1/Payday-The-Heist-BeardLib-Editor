@@ -18,6 +18,7 @@ function DebugTool:build_menu()
     draw:tickbox("Tasks", ClassClbk(self, "draw_group_ai"), false, {text = "Group AI Tasks", size_by_text = true})
     draw:tickbox("Drama", ClassClbk(self, "draw_drama"), false, {size_by_text = true})
     draw:tickbox("Triggers", ClassClbk(self, "set_draw_triggers"), false, {size_by_text = true})
+    draw:tickbox("AssaultInfo", ClassClbk(self, "set_combat_debug"), false, {size_by_text = true})
     draw:tickbox("Raycasts", ClassClbk(self, "show_raycast"), Global.show_raycast, {size_by_text = true})
     draw:combobox("ElementExecutions", ClassClbk(self, "set_script_debug"), {"Disabled", "Every element", "Elements with debug flag"}, 1)
 
@@ -319,5 +320,6 @@ end
 function DebugTool:draw_group_ai(item) managers.groupai:state():set_debug_draw_state(item:Value()) end
 function DebugTool:draw_drama(item) managers.groupai:state():set_drama_draw_state(item:Value()) end
 function DebugTool:show_raycast(item) Global.show_raycast = item:Value() end
+function DebugTool:set_combat_debug(item) self._parent:set_combat_debug(item:Value()) end
 function DebugTool:set_draw_triggers(item) self._parent._draw_triggers = item:Value() end
 function DebugTool:set_ai_enabled(item) managers.groupai:state():set_AI_enabled(item:Value()) end

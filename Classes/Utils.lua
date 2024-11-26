@@ -78,6 +78,7 @@ Utils.EditorIcons = {
 	empty_document = {160, 320, 32, 32},
 	document = {192, 320, 32, 32},
 	external = {224, 320, 32, 32},
+	waypoint = {256, 320, 32, 32},
 	
 	placeholder = {448, 448, 64, 64}
 }
@@ -755,7 +756,16 @@ function Utils:EditableGuiData(unit)
             space_fix = space_fix,
             text = text,
             font_color = unit:editable_gui():font_color(),
-            font_size = unit:editable_gui():font_size()
+            font_size = unit:editable_gui():font_size(),
+            font = unit:editable_gui():font(),
+            align = unit:editable_gui():align(),
+            vertical = unit:editable_gui():vertical(),
+            blend_mode = unit:editable_gui():blend_mode(),
+            render_template = unit:editable_gui():render_template(),
+            wrap = unit:editable_gui():wrap(),
+            word_wrap = unit:editable_gui():word_wrap(),
+            alpha = unit:editable_gui():alpha(),
+            shape = unit:editable_gui():shape()
         }
     end
     return t

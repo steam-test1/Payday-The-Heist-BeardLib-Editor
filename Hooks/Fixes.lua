@@ -25,6 +25,13 @@ if F == "coreelementarea" then
 		self._rules_elements = {}
 		if not self._values.use_shape_element_ids then
 			if not self._values.shape_type or self._values.shape_type == "box" then
+				-- self:_add_shape(CoreShapeManager.ShapeBoxMiddle:new({
+				-- 	position = self._values.position,
+				-- 	rotation = self._values.rotation,
+				-- 	width = self._values.width,
+				-- 	depth = self._values.depth,
+				-- 	height = self._values.height
+				-- }))
 			elseif self._values.shape_type == "cylinder" then
 				self:_add_shape(CoreShapeManager.ShapeCylinderMiddle:new({
 					position = self._values.position,
@@ -47,7 +54,7 @@ if F == "coreelementarea" then
 		for _, shape in ipairs(self._shapes) do
 			shape:draw(0, 0, self._values.enabled and 0 or 1, self._values.enabled and 1 or 0, 0, 0.2)
 		end
-	
+
 		for _, shape_element in ipairs(self._shape_elements) do
 			for _, shape in ipairs(shape_element:get_shapes()) do
 				shape:draw(0, 0, self._values.enabled and 0 or 1, self._values.enabled and 1 or 0, 0, 0.2)
@@ -67,7 +74,7 @@ elseif civ or F == "elementspawnenemydummy" then
 			else
 				self._enemy_name = Idstring("units/payday2/characters/ene_swat_1/ene_swat_1")
 			end
-		end 
+		end
 	end)
 	--Makes sure element doesn't crash in editor.
 	local orig = C.produce
@@ -129,7 +136,7 @@ elseif F == "jobmanager" then
 		end
 		return {Global.current_mission_filter} or self:current_stage_data().mission_filter
 	end
-	
+
 	Hooks:PostHook(JobManager, "stop_sounds", "EditorUnmuteWanted", function(self)
 		if managers.editor then
 			managers.editor:set_wanted_mute(false)
@@ -138,11 +145,11 @@ elseif F == "jobmanager" then
 elseif F == "coreworldcameramanager" then
 	function CoreWorldCameraManager:save()
 		local worldcameras = {}
-	
+
 		for name, world_camera in pairs(self._world_cameras) do
 			worldcameras[name] = world_camera:save_data_table()
 		end
-	
+
 		managers.worlddefinition._world_cameras_data = {}
 		if table.size(worldcameras) > 0 or table.size(self._world_camera_sequences) > 0 then
 			managers.worlddefinition._world_cameras_data = {

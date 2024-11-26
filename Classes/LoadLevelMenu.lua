@@ -286,7 +286,7 @@ function LoadLevelMenu:load_level(item)
 		local level_type = item.instance and "instance" or "heist"
        	BLE.Utils:QuickDialog({title = "Preview level '" .. tostring(level_id).."'?", message = "Since this is a vanilla " ..level_type.. " you can only preview it, clone the " ..level_type.. " if you wish to edit it!"..unsaved_warning}, load_tbl)
     elseif safe_mode then
-        BLE.Utils:QuickDialog({title = "Test level '" .. tostring(level_id).."'?", message = "Safemode is used to access the assets manager when the units fail to load by not spawning them"..unsaved_warning}, load_tbl)        
+        BLE.Utils:QuickDialog({title = "Test level '" .. tostring(level_id).."'?", message = "Safemode is used to access the assets manager when the units fail to load by not spawning them"..unsaved_warning}, load_tbl)
     else
         BLE.Utils:QuickDialog({title = "Edit level '" .. tostring(level_id).."'?", message = "This will load the level in the editor and will allow you to edit it"..unsaved_warning}, load_tbl)
     end

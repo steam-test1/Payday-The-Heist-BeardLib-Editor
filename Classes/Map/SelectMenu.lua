@@ -1,5 +1,5 @@
 SelectMenu = SelectMenu or class(EditorPart)
-function SelectMenu:init(parent, menu)    
+function SelectMenu:init(parent, menu)
     SelectMenu.super.init(self, parent, menu, "Select Menu", {make_tabs = true, scrollbar = false})
     local unit_key = BLE.Options:GetValue("Input/SelectUnit")
     local element_key = BLE.Options:GetValue("Input/SelectElement")

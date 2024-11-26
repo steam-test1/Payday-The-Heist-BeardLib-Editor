@@ -15,7 +15,7 @@ function PortalManager:pseudo_reset()
 		local is_inside = false
 		for _, pos in ipairs(self:check_positions()) do
 			is_inside = group:inside(pos)
-	
+
 			if is_inside then
 				break
 			end
@@ -61,23 +61,24 @@ function PortalUnitGroup:update(t, dt)
 		for _, unit in pairs(self._units) do
 			if alive(unit) then
 				unit:set_visible(true)
+				-- managers.portal:remove_from_hide_list(unit)
 			end
 		end
 	else
 		local is_inside
-	
+
 		for _, pos in ipairs(managers.portal:check_positions()) do
 			is_inside = self:inside(pos)
-	
+
 			if is_inside then
 				break
 			end
 		end
-	
+
 		if is_inside ~= nil and self._is_inside ~= is_inside then
 			self._is_inside = is_inside
 			local diff = self._is_inside and 1 or -1
-	
+
 			self:_change_units_visibility(diff)
 		end
 	end
@@ -91,7 +92,7 @@ function PortalManager:check_positions()
     for _, vp in ipairs(managers.viewport:all_really_active_viewports()) do
 		if vp._name ~= "MapEditor" then
             local camera = vp:camera()
-    
+
             if alive(camera) and vp:is_rendering_scene("World") then
                 table.insert(self._check_positions, camera:position())
             end

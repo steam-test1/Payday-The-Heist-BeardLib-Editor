@@ -9,7 +9,7 @@ EnvironmentToolEditor = EnvironmentToolEditor or class(ToolEditor)
 local EnvTool = EnvironmentToolEditor
 function EnvTool:init(parent)
 	self._posteffect = {}
-    self._underlayeffect = {}
+    self._underlayeffect = { materials = {} }
     self._sky = {}
     self._environment_effects = {}
     self._reported_data_path_map = {}
@@ -72,7 +72,7 @@ function EnvTool:build_menu()
 
     --FOG
 	local fog = self._holder:group("Fog")
-	
+
     self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", fog:colorbox("fog_start_color", nil, nil, {text = "Start color", ret_vec = true}))
     self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", fog:colorbox("fog_far_low_color", nil, nil, {text = "Far low color", ret_vec = true}))
     self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", fog:slider("fog_min_range", nil, 1, {text = "Min range", min = 0, max = 5000, floats = 1}))
@@ -111,7 +111,7 @@ function EnvTool:build_menu()
     -- TEXTURES
     local textures = self._holder:group("Underlay / Textures", {control_slice = 0.5})
     self:add_sky_param(textures:pathbox("underlay", nil, "", "scene", {not_close = true, loaded = true, text = "Underlay", check = function(entry)
-        return not (entry:match("core/levels") or entry:match("levels/zone")) 
+        return not (entry:match("core/levels") or entry:match("levels/zone"))
     end}))
     self:add_sky_param(textures:pathbox("sky_texture", nil, "", "texture", {not_close = true, text = "Sky Texture"}))
     self:add_sky_param(textures:pathbox("global_texture", nil, "", "texture", {not_close = true, text = "Cubemap"}))
@@ -145,7 +145,9 @@ function EnvTool:build_menu()
 
     self:database_load_env(env_path)
 
-    -- managers.viewport:first_active_viewport():set_environment_editor_callback(ClassClbk(self, "feed"))
+    managers.viewport:first_active_viewport():editor_callback(function(data)
+		self:feed(data)
+	end)
     self._built = true
 end
 
@@ -214,14 +216,14 @@ function EnvTool:load_env(env)
         local had_effects = false
         for k,v in pairs(env.data) do
             if k == "others" then
-                -- self:database_load_sky(v)
+                self:database_load_sky(v)
             elseif k == "post_effect" then
-                -- self:database_load_posteffect(v)
+                self:database_load_posteffect(v)
             elseif k == "underlay_effect" then
-                -- self:database_load_underlay(v)
+                self:database_load_underlay(v)
             elseif k == "environment_effects" then
-                self:database_load_environment_effects(v)
-                had_effects = true
+                -- self:database_load_environment_effects(v)
+                -- had_effects = true
             end
         end
         -- self:parse_shadow_data()
@@ -261,13 +263,10 @@ function EnvTool:database_load_underlay(underlay_effect_node)
                     local remove_param = false
                     if not parameter then
                         local data_path = "underlay_effect/" .. material._meta .. "/" .. k
-                        remove_param = not managers.viewport:has_data_path_key(Idstring(data_path):key())
                         if not remove_param then
                             log("Editor doesn't handle value but should: " .. data_path)
                             mat.params[k] = DummyItem:new()
                             parameter = mat.params[k]
-                        elseif managers.viewport:is_deprecated_data_path(data_path) then
-                        --    log("Deprecated value will be removed next time you save: " .. data_path)
                         else
                             log("Invalid value: " .. data_path)
                         end
@@ -299,12 +298,9 @@ function EnvTool:database_load_sky(sky_node)
             local remove_param = false
             if not self._sky.params[k] then
                 local data_path = "others/" .. k
-                remove_param = not managers.viewport:has_data_path_key(Idstring(data_path):key())
                 if not remove_param then
                     log("Editor doesn't handle value but should: " .. data_path)
                     self._sky.params[k] = DummyItem:new()
-                elseif managers.viewport:is_deprecated_data_path(data_path) then
-                --    log("Deprecated value will be removed next time you save: " .. data_path)
                 else
                     log("Invalid value: " .. data_path)
                 end
@@ -349,13 +345,10 @@ function EnvTool:database_load_posteffect(post_effect_node)
                                     local remove_param = false
                                     if not parameter then
                                         local data_path = "post_effect/" .. post_processor._meta .. "/" .. effect._meta .. "/" .. modifier._meta .. "/" .. k
-                                        remove_param = not managers.viewport:has_data_path_key(Idstring(data_path):key())
                                         if not remove_param then
                                             log("Editor doesn't handle value but should: " .. data_path)
                                             mod.params[k] = DummyItem:new()
                                             parameter = mod.params[k]
-                                        elseif managers.viewport:is_deprecated_data_path(data_path) then
-                                        --    log("Deprecated value will be removed next time you save: " .. data_path)
                                         else
                                             log("Invalid value: " .. data_path)
                                         end
@@ -388,7 +381,7 @@ function EnvTool:add_post_processors_param(pro, effect, mod, gui)
     self._posteffect.post_processors[pro].effects[effect].modifiers[mod] = self._posteffect.post_processors[pro].effects[effect].modifiers[mod] or {}
     self._posteffect.post_processors[pro].effects[effect].modifiers[mod].params = self._posteffect.post_processors[pro].effects[effect].modifiers[mod].params or {}
     self._posteffect.post_processors[pro].effects[effect].modifiers[mod].params[gui.name] = gui
- 
+
     local processor = managers.viewport:first_active_viewport():vp():get_post_processor_effect("World", Idstring(pro))
     if processor then
         local modifier = processor:modifier(Idstring(mod))
@@ -402,29 +395,25 @@ function EnvTool:add_post_processors_param(pro, effect, mod, gui)
     return gui
 end
 
-function EnvTool:add_underlay_param(mat, param, gui)
-    if not self._underlayeffect.materials then
-		self._underlayeffect.materials = {}
-	end
-	if not self._underlayeffect.materials[mat] then
-		self._underlayeffect.materials[mat] = {}
-	end
-	if not self._underlayeffect.materials[mat].params then
-		self._underlayeffect.materials[mat].params = {}
-	end
-	self._underlayeffect.materials[mat].params[param] = gui
-	local material = Underlay:material(Idstring(mat))
-	if material and material:variable_exists(Idstring(param)) then
-		local value = material:get_variable(Idstring(param))
-		if value then
-			gui:set_value(value)
-		end
-	end
+function EnvTool:add_underlay_param(mat, gui)
+    self._underlayeffect.materials = self._underlayeffect.materials or {}
+    self._underlayeffect.materials[mat] = self._underlayeffect.materials[mat] or {}
+    self._underlayeffect.materials[mat].params = self._underlayeffect.materials[mat].params or {}
+    self._underlayeffect.materials[mat].params[gui.name] = gui
+
+    local material = Underlay:material(Idstring(mat))
+    if material and material:variable_exists(Idstring(gui.name)) then
+        local value = material:get_variable(Idstring(gui.name))
+        if value then
+            gui:SetValue(value)
+        end
+    end
+    return gui
 end
 
 function EnvTool:set_data_path(data_path, handler, value)
     local data_path_key = Idstring(data_path):key()
-    if value and not self._reported_data_path_map[data_path_key] and not handler:editor_set_value(data_path_key, value) then
+    if value and not self._reported_data_path_map[data_path_key] then
         self._reported_data_path_map[data_path_key] = true
         log("Data path is not supported: " .. tostring(data_path))
     end
@@ -478,14 +467,13 @@ end
 
 function EnvTool:shadow_feed_params(feed_params)
     local interface_params = self._posteffect.post_processors.shadow_processor.effects.shadow_rendering.modifiers.shadow_modifier.params
-    local fov_ratio = managers.environment_controller:fov_ratio()
-    local d0 = interface_params.d0:Value() * fov_ratio
-    local d1 = interface_params.d1:Value() * fov_ratio
-    local d2 = interface_params.d2:Value() * fov_ratio
-    local d3 = interface_params.d3:Value() * fov_ratio
-    local o1 = interface_params.o1:Value() * fov_ratio
-    local o2 = interface_params.o2:Value() * fov_ratio
-    local o3 = interface_params.o3:Value() * fov_ratio
+    local d0 = interface_params.d0:Value()
+    local d1 = interface_params.d1:Value()
+    local d2 = interface_params.d2:Value()
+    local d3 = interface_params.d3:Value()
+    local o1 = interface_params.o1:Value()
+    local o2 = interface_params.o2:Value()
+    local o3 = interface_params.o3:Value()
     local s0 = Vector3(0, d0, 0)
     local s1 = Vector3(d0 - o1, d1, 0)
     local s2 = Vector3(d1 - o2, d2, 0)

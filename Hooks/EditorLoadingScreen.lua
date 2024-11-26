@@ -7,11 +7,12 @@ function es:init(gui, res, p, layer)
 		local panel = self._gui:workspaces()[1]:panel()
 		self._indicator = panel:bitmap({
 			name = "indicator",
+			texture = "textures/editor_icons_df",
+			texture_rect = {320, 64, 64, 64},
 			w = 32,
 			h = 32,
 			layer = 100
 		})
-		self._indicator:set_image("textures/editor_icons_df", 320, 64, 64, 64)
 		self._indicator:set_center(panel:w() / 2, panel:h() / 1.7)
 	else
 		es.super.init(self, gui, res, p, layer)
@@ -20,8 +21,8 @@ end
 
 function es:update(...)
 	if self._is_editor then
-		self:do_editor_stuff() 	
-		
+		self:do_editor_stuff()
+
 		local args = {...}
 		self._indicator:rotate(180 * args[3])
 	else
@@ -30,14 +31,14 @@ function es:update(...)
 end
 
 function es:do_editor_stuff()
-	if alive(self._gui) and self._gui:workspaces()[1] then
+	if self._gui and self._gui:workspaces()[1] then
 		local load = self._gui:workspaces()[1]:panel():child("Load")
-		if alive(load) then
+		if load then
 			for _, child in pairs(load:children()) do
 				local mchild = getmetatable(child)
 				if mchild == Text then
 			        child:animate(function(o)
-			            if alive(o) then
+			            if o then
 			                coroutine.yield()
 			                o:set_text(tostring(o:name()))
 			            end

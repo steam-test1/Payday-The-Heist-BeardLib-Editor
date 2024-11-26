@@ -106,7 +106,7 @@ function BLE:InitManagers(data)
     self.ColorDialog = ColorDialog:new(self._dialogs_opt)
     self.InputDialog = InputDialog:new(self._dialogs_opt)
     self.FBD = FileBrowserDialog:new(self._dialogs_opt)
-    self.MSLD = MultiSelectListDialog:new(self._dialogs_opt)    
+    self.MSLD = MultiSelectListDialog:new(self._dialogs_opt)
 
     if Global.editor_mode then
         if not self._vp then
@@ -185,7 +185,9 @@ function BLE:InitManagers(data)
         self:LoadCustomAssets()
     end
 
-    -- self:ClearTempFolder()
+    if FileIO:Exists(self.TempDir) then
+        self:ClearTempFolder()
+    end
 end
 
 function BLE:LoadCustomAssets()
@@ -321,7 +323,7 @@ function BLE:GeneratePackageData()
                     end
                     if typ then -- Added typ check here
                         paths[typ] = paths[typ] or {}
-    
+
                         if DB:has(typ, path) then
                             paths[typ][path] = true
                             if pkg then

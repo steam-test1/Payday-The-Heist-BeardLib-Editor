@@ -1,6 +1,6 @@
 Hooks:PostHook(GameSetup, "init_finalize", "BeardLibEditorInitFinalize", function()
 	BLE:SetLoadingText("Almost There")
-	if Global.editor_mode then 
+	if Global.editor_mode then
 		if Global.game_settings.single_player then
 			log("editor state")
 			game_state_machine:change_state_by_name("ingame_standard") --No transition from IngameWaitingForPlayers to editor state in raid so intermediary for now.
@@ -12,6 +12,10 @@ Hooks:PostHook(GameSetup, "init_finalize", "BeardLibEditorInitFinalize", functio
 			game_state_machine:change_state_by_name("ingame_standard")
 		end
 	end
+end)
+
+Hooks:PostHook(GameSetup, "load_packages", "BeardLibEditorLoadPackages", function(self)
+
 end)
 
 Hooks:PostHook(GameSetup, "destroy", "BeardLibEditorDestroy",function()

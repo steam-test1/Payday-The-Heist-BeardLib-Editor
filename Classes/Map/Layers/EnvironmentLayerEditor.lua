@@ -239,7 +239,7 @@ function EnvLayer:update(t, dt)
 					end
 					Application:draw(unit, r, g, b)
 					unit:unit_data().environment_area:draw(t, dt, r, g, b)
-				end		
+				end
 				if unit:name() == Idstring(self._dome_occ_shape_unit) then
 					local r, g, b = 0.5, 0, 0.5
 					if table.contains(selected_units, unit) then
@@ -264,14 +264,14 @@ end
 
 function EnvLayer:build_menu()
 	self._holder:ClearItems()
-	
+
 	local data = self:data()
 	local opt = self:GetPart("opt")
 
 	local environment_values = data.environment_values
 
     local environment_group = self._holder:group("Environment")
-	environment_group:pathbox("Environment", ClassClbk(self, "change_environment"), environment_values.environment, "environment", {not_close = true})
+	-- environment_group:pathbox("Environment", ClassClbk(self, "change_environment"), environment_values.environment, "environment", {not_close = true})
     local sky = self._holder:group("Sky")
     sky:slider("SkyRotation", ClassClbk(self, "change_sky_rotation"), environment_values.sky_rot, {min = 0, max = 360})
     local colors = {
@@ -288,7 +288,7 @@ function EnvLayer:build_menu()
 
 	environment_group:button("BuildCubemaps", function()
 		local cubes = self:selected_unit() and "selected" or "all"
-		if not self:selected_unit() then 
+		if not self:selected_unit() then
 			BLE.Utils:YesNoQuestion("No cubemap gizmos were selected. Would you like to build cubemaps for all gizmos in the level?",
 			function()
 				self:create_cube_map("all")
@@ -302,15 +302,15 @@ function EnvLayer:build_menu()
 	end)
 	environment_group:button("BuildProjectionLights", function()
 		local lights = self:selected_unit() and self:selected_unit():get_object(Idstring("lo_omni")) or nil
-		if not lights then 
+		if not lights then
 			BLE.Utils:YesNoQuestion("No lights were selected. Would you like to build projection lights for all lights in the level?",
 			function()
 				self:GetPart("cubemap_creator"):create_projection_light("all")
 			end)
-		else 
+		else
 			BLE.Utils:YesNoQuestion("Would you like to build projection lights for all selected lights in the level?",
 			function()
-				self:GetPart("cubemap_creator"):create_projection_light("selected") 
+				self:GetPart("cubemap_creator"):create_projection_light("selected")
 			end)
 		end
 	end)
@@ -325,7 +325,7 @@ function EnvLayer:build_menu()
 		enabled = false
     })
 
-	local dome_occ = self._holder:group("DomeOcclusion", {visible = true}) 
+	local dome_occ = self._holder:group("DomeOcclusion", {visible = true})
     --self._draw_occ_shape = dome_occ:tickbox("Draw", nil, false)
     dome_occ:button("SpawnDomeOcclusion", ClassClbk(spawn, "begin_spawning", self._dome_occ_shape_unit, nil, Rotation(-90, 0, 0)))
 	dome_occ:button("Generate", ClassClbk(self, "generate_dome_occ", "all"))

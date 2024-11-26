@@ -9,11 +9,11 @@ end
 
 function PortalLayer:loaded_continents()
     PortalLayer.super.loaded_continents(self)
-    -- for _, portal in pairs(clone(managers.portal:unit_groups())) do
-    --     for _, shape in pairs(portal._shapes) do
-    --         self:do_spawn_unit(self._portal_shape_unit, {position = shape:position(), rotation = shape:rotation(), shape = shape, portal = portal})
-    --     end
-    -- end
+    for _, portal in pairs(clone(managers.portal:unit_groups())) do
+        -- for _, shape in pairs(portal._shapes) do
+        --     self:do_spawn_unit(self._portal_shape_unit, {position = shape:position(), rotation = shape:rotation(), shape = shape, portal = portal})
+        -- end
+    end
 end
 
 function PortalLayer:reset()
@@ -137,7 +137,7 @@ function PortalLayer:update(t, dt)
     end
     if self._holder:GetItemValue("HighlightUnitsInPortal") then
         if portal then
-            for unit_id in pairs(portal._ids) do  
+            for unit_id in pairs(portal._ids) do
                 local unit = managers.worlddefinition:get_unit(unit_id)
                 if alive(unit) then
                     Application:draw(unit, 1, 0, 0)
@@ -160,7 +160,7 @@ function PortalLayer:select_shape(item)
         for i=1, #self._selected_portal._shapes do
             self._holder:GetItem("shape_" .. tostring(i)):SetBorder({left = false})
         end
-        self._selected_shape = item and self._selected_portal._shapes[tonumber(item.id)] 
+        self._selected_shape = item and self._selected_portal._shapes[tonumber(item.id)]
     end
     if self._selected_shape and self:selected_unit() ~= self._selected_shape:unit() then
         self:GetPart("static"):set_selected_unit(self._selected_shape:unit())
@@ -237,7 +237,7 @@ function PortalLayer:clbk_manage_units(items)
             self._selected_portal:add_unit_id(unit)
         end
     end
-    self:load_portal_units() 
+    self:load_portal_units()
 end
 function PortalLayer:remove_unit_from_portal(unit, item)
     if self._selected_portal then
@@ -276,7 +276,7 @@ function PortalLayer:rename_portal(item)
             self._selected_portal = nil
         end
         self:load_portals()
-        self:save() 
+        self:save()
     end})
 end
 
@@ -287,7 +287,7 @@ function PortalLayer:remove_portal(item)
             self._selected_portal = nil
         end
         self:load_portals()
-        self:save()   
+        self:save()
     end)
 end
 
@@ -298,7 +298,7 @@ function PortalLayer:remove_shape(item)
         end
         self._selected_portal:remove_shape(self._selected_portal._shapes[tonumber(item.parent.id)])
         self:load_portal_shapes()
-        self:save()        
+        self:save()
     end)
 end
 
@@ -360,8 +360,8 @@ function PortalLayer:select_portal(name, nounselect, noswitch)
         self._holder:GetItem("portal_"..name):SetBorder({left = true})
         self._selected_portal = managers.portal:unit_groups()[name]
         self:load_portal_shapes()
-    end    
-    self:load_portal_units()    
+    end
+    self:load_portal_units()
     self:select_shape()
     self:save()
 end
@@ -386,7 +386,7 @@ function PortalLayer:add_shape()
     if not self._selected_portal then
         return
     end
-    
+
     self:do_spawn_unit(self._portal_shape_unit, {position = managers.editor:GetSpawnPosition(), portal = self._selected_portal})
     self:load_portal_shapes()
     self:save()
@@ -402,7 +402,7 @@ function PortalLayer:load_portals()
             prtl:tb_imgbtn("Rename", ClassClbk(self, "rename_portal"), nil, BLE.Utils.EditorIcons.pen, {help = "Rename"})
             prtl:tb_imgbtn("AutoFillUnits", ClassClbk(self, "auto_fill_portal"), nil, BLE.Utils.EditorIcons.portal_add, {help = "Auto fill units inside shapes"})
         end
-    end   
+    end
 end
 
 function PortalLayer:auto_fill_portal(item)

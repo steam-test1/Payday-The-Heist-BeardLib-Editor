@@ -135,7 +135,7 @@ function NavigationManager:set_debug_draw_state(options)
                 	temp[k] = option.value
 				end
             end
-        end 
+        end
 
 		if table.size(temp) > 0 then
         	options = temp
@@ -210,4 +210,4 @@ function NavigationManager:_draw_nav_obstacles()
 			end
 		end
 	end
-end 
+end

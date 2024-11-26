@@ -491,6 +491,11 @@ function StaticEditor:update_positions()
         elseif unit:mission_element() and self:GetPart("mission")._current_script then
             self:GetPart("mission")._current_script:update_positions(unit:position(), unit:rotation())
         end
+        for _, unit in pairs(self:selected_units()) do
+            if alive(unit) and unit:editable_gui() then
+                unit:editable_gui():set_blend_mode(unit:editable_gui():blend_mode())
+            end
+        end
         for _, editor in pairs(self._editors) do
             if editor.update_positions then
                 editor:update_positions(unit)
@@ -1428,6 +1433,14 @@ function Static:delete_selected(item)
     self:GetPart("undo_handler"):SaveUnitValues(self._selected_units, "delete")
 
     local should_reload = #self._selected_units < 10
+
+    -- Delete instances
+    if self:selected_unit():fake() or #self._selected_units > 1 then
+        self:GetPart("instances"):delete_instances()
+        if should_reload then
+            self:GetPart("select"):get_menu("instance"):reload()
+        end
+    end
 
     for _, unit in pairs(self._selected_units) do
         if alive(unit) then
