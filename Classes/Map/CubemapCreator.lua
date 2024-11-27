@@ -17,7 +17,7 @@ CubemapCreator = CubemapCreator or class(EditorPart)
 
 function CubemapCreator:init(parent, menu, cam)
     self._parent = parent
-	
+
 	self._camera = cam
     self._cube_counter = 1
 	self._creating_cube_map = false
@@ -47,7 +47,7 @@ end
 function CubemapCreator:update(t, dt)
 	if self._creating_cube_map then
         self:_create_cube_map()
-        
+
 		return
 	elseif self._params and self._params.dome_occ then
 		self:_tick_generate_dome_occlusion(t, dt)
@@ -88,7 +88,7 @@ function CubemapCreator:create_projection_light(type)
 
 	self._saved_all_lights = {}
 
-	
+
 	for _, light in ipairs(CoreEditorUtils.all_lights()) do
 		if alive(light) then
 			table.insert(self._saved_all_lights, {
@@ -130,12 +130,13 @@ function CubemapCreator:create_projection_light(type)
 		data.light:set_enable(false)
 	end
 
+	self:viewport():vp():set_post_processor_effect("World", Idstring("hdr_post_processor"), Idstring("empty"))
 	self:viewport():vp():set_post_processor_effect("World", Idstring("deferred"), Idstring("projection_generation"))
 	self:viewport():vp():set_post_processor_effect("World", Idstring("depth_projection"), Idstring("depth_project"))
 
-	local saved_environment = managers.viewport:default_environment()
+	local saved_environment = managers.environment_area:default_environment()
 
-	managers.viewport:set_default_environment("core/environments/default", nil, nil)
+	managers.environment_area:set_default_environment("core/environments/default", nil, nil)
 	self:create_cube_map({
 		simple_postfix = true,
 		cubes = lights,
@@ -171,13 +172,16 @@ function CubemapCreator:create_cube_map(params)
 	self._camera:set_aspect_ratio(1)
 	self._camera:set_width_multiplier(1)
 
-	managers.mouse_pointer:disable()
+	if managers.mouse_pointer then
+		managers.mouse_pointer:_deactivate()
+	end
+
 	self._parent:partially_disable()
 
 	self._saved_hidden_object = {}
 	self._saved_hidden_units = {}
 	self._saved_hidden_elements = {}
-	
+
 	local elements = self:GetPart("mission"):units()
 	for _, unit in pairs(elements) do
         local element_unit = unit:mission_element()
@@ -191,7 +195,7 @@ function CubemapCreator:create_cube_map(params)
 	for _, unit in pairs(World:find_units_quick("all")) do
 		local ud = unit:unit_data()
 		if type(ud) == "table" and (ud.only_visible_in_editor or ud.only_exists_in_editor or ud.hide_on_projection_light) then
-			if unit:visible() then 
+			if unit:visible() then
 				table.insert(self._saved_hidden_units, unit)
 				unit:set_visible(false)
 			end
@@ -397,13 +401,16 @@ function CubemapCreator:_create_dome_occlusion(params)
 	self._camera:set_aspect_ratio(1)
 	self._camera:set_width_multiplier(1)
 
-	managers.mouse_pointer:disable()
+	if managers.mouse_pointer then
+		managers.mouse_pointer:_deactivate()
+	end
+
 	self._parent:partially_disable()
 
 	self._saved_hidden_object = {}
 	self._saved_hidden_units = {}
 	self._saved_hidden_elements = {}
-	
+
 	local elements = self:GetPart("mission"):units()
 	for _, unit in pairs(elements) do
         local element_unit = unit:mission_element()
@@ -417,7 +424,7 @@ function CubemapCreator:_create_dome_occlusion(params)
 	for _, unit in pairs(World:find_units_quick("all")) do
 		local ud = unit:unit_data()
 		if type(ud) == "table" and (ud.only_visible_in_editor or ud.only_exists_in_editor or ud.hide_on_projection_light) then
-			if unit:visible() then 
+			if unit:visible() then
 				table.insert(self._saved_hidden_units, unit)
 				unit:set_visible(false)
 			end
@@ -499,9 +506,9 @@ function CubemapCreator:cube_map_done()
 		BLE.Utils:Notify("Error", "Something went wrong during the creation of cubemaps! Check the log in the Tools folder for more info.")
 		self._error_when_done = false
 	end
-	
+
 	if self._cubemap_params.saved_environment then
-		managers.viewport:set_default_environment(self._cubemap_params.saved_environment, nil, nil)
+		managers.environment_area:set_default_environment(self._cubemap_params.saved_environment, nil, nil)
 	end
 
 	if self._saved_all_lights then
@@ -551,7 +558,10 @@ function CubemapCreator:cube_map_done()
 	self:viewport():set_width_mul_enabled(true)
 	self:viewport():pop_ref_fov()
 
-	managers.mouse_pointer:enable()
+	if managers.mouse_pointer then
+		managers.mouse_pointer:_activate()
+	end
+
 	self._parent:enable()
 
 	self._params = nil
@@ -598,7 +608,10 @@ function CubemapCreator:dome_occlusion_done()
 	self:viewport():set_width_mul_enabled(true)
 	self:viewport():pop_ref_fov()
 
-	managers.mouse_pointer:enable()
+	if managers.mouse_pointer then
+		managers.mouse_pointer:_activate()
+	end
+
 	self._parent:enable()
 
 	if self._notify_success then

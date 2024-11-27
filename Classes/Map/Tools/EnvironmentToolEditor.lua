@@ -65,19 +65,30 @@ function EnvTool:build_menu()
     quick:button("LoadGameDefault", ClassClbk(self, "database_load_env", "core/environments/default"))
     quick:button("LoadCurrentDefault", ClassClbk(self, "database_load_env", env_path))
     quick:button("Save", ClassClbk(self, "write_to_disk_dialog"))
+
     --SUN
     local sun = self._holder:group("Sun")
     self:add_sky_param(sun:colorbox("sun_ray_color", nil, nil, {text = "Color", ret_vec = true}))
     self:add_sky_param(sun:slider("sun_ray_color_scale", nil, 1, {text = "Intensity", step = 0.1, min = 0, max = 10}))
+	self:add_sky_param(sun:slider("sun_anim", nil, 1, {text = "Sun Anim", step = 0.1, min = 0, max = 10}))
+	self:add_sky_param(sun:slider("sun_anim_x", nil, 1, {text = "Sun Anim X", step = 0.1, min = 0, max = 10}))
 
     --FOG
 	local fog = self._holder:group("Fog")
-
-    self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", fog:colorbox("fog_start_color", nil, nil, {text = "Start color", ret_vec = true}))
-    self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", fog:colorbox("fog_far_low_color", nil, nil, {text = "Far low color", ret_vec = true}))
-    self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", fog:slider("fog_min_range", nil, 1, {text = "Min range", min = 0, max = 5000, floats = 1}))
-    self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", fog:slider("fog_max_range", nil, 1, {text = "Max range", min = 0, max = 500000, floats = 1}))
-    self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", fog:slider("fog_max_density", nil, 1, {text = "Max density", min = 0, max = 1}))
+	self:add_post_processors_param("fog_processor", "fog", "fog", fog:colorbox("start_color", nil, nil, {text = "Start color", ret_vec = true}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("start_color_scale", nil, 1, {text = "Start color scale", min = 0, max = 100, floats = 0.1}))
+	self:add_post_processors_param("fog_processor", "fog", "fog", fog:colorbox("color0", nil, nil, {text = "Color0", ret_vec = true}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("color0_scale", nil, 1, {text = "Color0 scale", min = 0, max = 100, floats = 0.1}))
+	self:add_post_processors_param("fog_processor", "fog", "fog", fog:colorbox("color1", nil, nil, {text = "Color1", ret_vec = true}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("color1_scale", nil, 1, {text = "Color1 scale", min = 0, max = 100, floats = 0.1}))
+	self:add_post_processors_param("fog_processor", "fog", "fog", fog:colorbox("color2", nil, nil, {text = "Color2", ret_vec = true}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("color2_scale", nil, 1, {text = "Color2 scale", min = 0, max = 100, floats = 0.1}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("start", nil, 1, {text = "Start", min = 0, max = 100, floats = 0.5}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("alpha0", nil, 1, {text = "Alpha0", min = 0, max = 100, floats = 0.5}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("alpha1", nil, 1, {text = "Alpha1", min = 0, max = 100, floats = 0.5}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("end0", nil, 1, {text = "End0", min = 0, max = 100, floats = 0.5}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("end1", nil, 1, {text = "End1", min = 0, max = 100, floats = 0.5}))
+	--self:add_post_processors_param("fog_processor", "fog", "fog", fog:slider("end2", nil, 1, {text = "End2", min = 0, max = 100, floats = 0.5}))
 
     --SKY DOME LIGHT
     local skydome = self._holder:group("Sky Dome Light")
@@ -90,33 +101,35 @@ function EnvTool:build_menu()
     local ambient = self._holder:group("Ambient")
     self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", ambient:colorbox("ambient_color", nil, nil, {text = "Color", ret_vec = true}))
     self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", ambient:slider("ambient_color_scale", nil, 1, {text = "Color scale", step = 0.1, min = 0, max = 10}))
-    self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", ambient:slider("ambient_scale", nil, 1, {text = "Scale", step = 0.1, min = 0, max = 1}))
+    self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", ambient:slider("ambient_scale", nil, 1, {text = "Scale", step = 0.1, min = 0, max = 10}))
     self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", ambient:slider("ambient_falloff_scale", nil, 1, {text = "Falloff scale", step = 0.1, min = 0, max = 10}))
     self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", ambient:slider("effect_light_scale", nil, 1, {text = "Effect lighting scale", step = 0.1, min = 0, max = 10}))
 
     -- BLOOM
-    local bloom = self._holder:group("Bloom")
-    self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", bloom:slider("bloom_threshold", nil, 1, {text = "Threshold", min = 0, max = 1, floats = 2}))
-    self:add_post_processors_param("bloom_combine_post_processor", "bloom_combine", "bloom_lense", bloom:slider("bloom_intensity", nil, 1, {text = "Intensity", min = 0, max = 10, floats = 2}))
-    self:add_post_processors_param("bloom_combine_post_processor", "bloom_combine", "bloom_lense", bloom:slider("bloom_blur_size", nil, 1, {text = "Blur size", min = 1, max = 4, floats = 0}))
-    self:add_post_processors_param("bloom_combine_post_processor", "bloom_combine", "bloom_lense", bloom:slider("lense_intensity", nil, 1, {text = "Lense intensity", min = 0, max = 1, floats = 2}))
+	-- local bloom = self._holder:group("Bloom")
+	-- self:add_post_processors_param("deferred", "deferred_lighting", "apply_ambient", bloom:slider("bloom_threshold", nil, 1, {text = "Threshold", min = 0, max = 1, floats = 2}))
+	-- self:add_post_processors_param("bloom_combine_post_processor", "bloom_combine", "bloom_lense", bloom:slider("bloom_intensity", nil, 1, {text = "Intensity", min = 0, max = 10, floats = 2}))
+	-- self:add_post_processors_param("bloom_combine_post_processor", "bloom_combine", "bloom_lense", bloom:slider("bloom_blur_size", nil, 1, {text = "Blur size", min = 1, max = 4, floats = 0}))
+	-- self:add_post_processors_param("bloom_combine_post_processor", "bloom_combine", "bloom_lense", bloom:slider("lense_intensity", nil, 1, {text = "Lense intensity", min = 0, max = 1, floats = 2}))
 
     -- SKY
 	-- local sky = self._holder:group("Sky")
-    -- self:add_underlay_param("sky", sky:colorbox("color0", nil, nil, {text = "Color top", ret_vec = true}))
-    -- self:add_underlay_param("sky", sky:slider("color0_scale", nil, 1, {text = "Color top scale", step = 0.1, min = 0, max = 10}))
-    -- self:add_underlay_param("sky", sky:colorbox("color2", nil, nil, {text = "Color low", ret_vec = true}))
-    -- self:add_underlay_param("sky", sky:slider("color2_scale", nil, 1, {text = "Color low scale", step = 0.1, min = 0, max = 10}))
+	-- self:add_underlay_param("sky", sky:colorbox("color0", nil, nil, {text = "Color top", ret_vec = true}))
+	-- self:add_underlay_param("sky", sky:slider("color0_scale", nil, 1, {text = "Color top scale", step = 0.1, min = 0, max = 10}))
+	-- self:add_underlay_param("sky", sky:colorbox("color1", nil, nil, {text = "Color mid", ret_vec = true}))
+	-- self:add_underlay_param("sky", sky:slider("color1_scale", nil, 1, {text = "Color mid scale", step = 0.1, min = 0, max = 10}))
+	-- self:add_underlay_param("sky", sky:colorbox("color2", nil, nil, {text = "Color low", ret_vec = true}))
+	-- self:add_underlay_param("sky", sky:slider("color2_scale", nil, 1, {text = "Color low scale", step = 0.1, min = 0, max = 10}))
 
     -- TEXTURES
     local textures = self._holder:group("Underlay / Textures", {control_slice = 0.5})
     self:add_sky_param(textures:pathbox("underlay", nil, "", "scene", {not_close = true, loaded = true, text = "Underlay", check = function(entry)
         return not (entry:match("core/levels") or entry:match("levels/zone"))
     end}))
-    self:add_sky_param(textures:pathbox("sky_texture", nil, "", "texture", {not_close = true, text = "Sky Texture"}))
-    self:add_sky_param(textures:pathbox("global_texture", nil, "", "texture", {not_close = true, text = "Cubemap"}))
-    self:add_sky_param(textures:pathbox("global_world_overlay_texture", nil, "", "texture", {not_close = true, text = "World Overlay Texture", control_slice = 0.55}))
-    self:add_sky_param(textures:pathbox("global_world_overlay_mask_texture", nil, "", "texture", {not_close = true, text = "World Overlay Mask", control_slice = 0.55}))
+	-- self:add_sky_param(textures:pathbox("sky_texture", nil, "", "texture", {not_close = true, text = "Sky Texture"}))
+	self:add_sky_param(textures:pathbox("global_texture", nil, "", "texture", {not_close = true, text = "Cubemap"}))
+	-- self:add_sky_param(textures:pathbox("global_world_overlay_texture", nil, "", "texture", {not_close = true, text = "World Overlay Texture", control_slice = 0.55}))
+	-- self:add_sky_param(textures:pathbox("global_world_overlay_mask_texture", nil, "", "texture", {not_close = true, text = "World Overlay Mask", control_slice = 0.55}))
 
     -- SHADOWS
     local shadows = self._holder:group("Shadows", {control_slice = 0.5})
@@ -145,9 +158,10 @@ function EnvTool:build_menu()
 
     self:database_load_env(env_path)
 
-    managers.viewport:first_active_viewport():editor_callback(function(data)
-		self:feed(data)
-	end)
+    -- managers.viewport:first_active_viewport():editor_callback(function(data)
+	-- 	self:feed(data)
+	-- end)
+    managers.viewport:first_active_viewport():editor_callback(ClassClbk(self, "feed"))
     self._built = true
 end
 
@@ -419,50 +433,91 @@ function EnvTool:set_data_path(data_path, handler, value)
     end
 end
 
-local scene_ids = Idstring("scene")
-function EnvTool:feed(handler, viewport, scene)
+-- local scene_ids = Idstring("scene")
+-- function EnvTool:feed(handler, viewport, scene)
 
-    for postprocessor_name, post_processor in pairs(self._posteffect.post_processors) do
-        if postprocessor_name == "shadow_processor" then
-            local shadow_param_map = {}
-            self:shadow_feed_params(shadow_param_map)
-            for kpar, vpar in pairs(shadow_param_map) do
-                self:set_data_path("post_effect/" .. postprocessor_name .. "/shadow_rendering/shadow_modifier/" .. kpar, handler, vpar)
-            end
-        else
-            for effect_name, effect in pairs(post_processor.effects) do
-                for modifier_name, modifier in pairs(effect.modifiers) do
-                    for param_name, param in pairs(modifier.params) do
-                        self:set_data_path("post_effect/" .. postprocessor_name .. "/" .. effect_name .. "/" .. modifier_name .. "/" .. param_name, handler, param:Value())
-                    end
-                end
-            end
-        end
+--     for postprocessor_name, post_processor in pairs(self._posteffect.post_processors) do
+--         if postprocessor_name == "shadow_processor" then
+--             local shadow_param_map = {}
+--             self:shadow_feed_params(shadow_param_map)
+--             for kpar, vpar in pairs(shadow_param_map) do
+--                 self:set_data_path("post_effect/" .. postprocessor_name .. "/shadow_rendering/shadow_modifier/" .. kpar, handler, vpar)
+--             end
+--         else
+--             for effect_name, effect in pairs(post_processor.effects) do
+--                 for modifier_name, modifier in pairs(effect.modifiers) do
+--                     for param_name, param in pairs(modifier.params) do
+--                         self:set_data_path("post_effect/" .. postprocessor_name .. "/" .. effect_name .. "/" .. modifier_name .. "/" .. param_name, handler, param:Value())
+--                     end
+--                 end
+--             end
+--         end
+-- 	end
+
+--     for kmat, vmat in pairs(self._underlayeffect.materials) do
+--         for kpar, vpar in pairs(vmat.params) do
+--             self:set_data_path("underlay_effect/" .. kmat .. "/" .. kpar, handler, vpar:Value())
+--         end
+-- 	end
+
+-- 	for kpar, vpar in pairs(self._sky.params) do
+--         local val = vpar:Value()
+--         local set = function()
+--             self:set_data_path("others/" .. kpar, handler, val)
+--         end
+-- 		if kpar == "underlay" then
+--             local assets = self:GetPart("assets")
+--             --I don't fucking know why but loading scenes just doesn't work
+--             if assets:is_asset_loaded("scene", val) or BLE.Utils:InAllPackage(val, "scene") then
+--                 set()
+--             else
+--                 assets:quick_load_from_db("scene", val, set)
+--             end
+--         else
+--             set()
+--         end
+--     end
+-- end
+
+function EnvTool:feed(data)
+	for k, v in pairs(data:data_root()) do
+		if k == "post_effect" then
+			for kpro, vpro in pairs(v) do
+				if kpro == "shadow_processor" then
+					self:shadow_feed_params(vpro.shadow_rendering.shadow_modifier)
+				else
+					for keffect, veffect in pairs(vpro) do
+						for kmod, vmod in pairs(veffect) do
+							for kpar, vpar in pairs(vmod) do
+                                if self._posteffect.post_processors.modifiers then
+                                    vmod[kpar] = assert(self._posteffect.post_processors[kpro].modifiers[kmod].params[kpar]:Value(), kpar)
+                                end
+							end
+						end
+					end
+				end
+			end
+		elseif k == "underlay_effect" then
+			for kmat, vmat in pairs(v) do
+				for kpar, vpar in pairs(vmat) do
+					vmat[kpar] = assert(self._underlayeffect.materials[kmat].params[kpar]:Value(), kpar)
+				end
+			end
+		elseif k == "others" then
+			for kpar, vpar in pairs(v) do
+				if kpar ~= "underlay" or self._sky.params[kpar]:Value() ~= "" then
+					v[kpar] = assert(self._sky.params[kpar]:Value(), kpar)
+				end
+			end
+		elseif k == "sky_orientation" then
+			for kpar, vpar in pairs(v) do
+			end
+		else
+			log("Corrupt environment!")
+		end
 	end
-
-    for kmat, vmat in pairs(self._underlayeffect.materials) do
-        for kpar, vpar in pairs(vmat.params) do
-            self:set_data_path("underlay_effect/" .. kmat .. "/" .. kpar, handler, vpar:Value())
-        end
-	end
-
-	for kpar, vpar in pairs(self._sky.params) do
-        local val = vpar:Value()
-        local set = function()
-            self:set_data_path("others/" .. kpar, handler, val)
-        end
-		if kpar == "underlay" then
-            local assets = self:GetPart("assets")
-            --I don't fucking know why but loading scenes just doesn't work
-            if assets:is_asset_loaded("scene", val) or BLE.Utils:InAllPackage(val, "scene") then
-                set()
-            else
-                assets:quick_load_from_db("scene", val, set)
-            end
-        else
-            set()
-        end
-    end
+	managers.viewport:first_active_viewport():feed_params()
+	return data
 end
 
 function EnvTool:shadow_feed_params(feed_params)
