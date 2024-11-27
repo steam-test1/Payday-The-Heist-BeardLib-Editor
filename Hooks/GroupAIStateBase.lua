@@ -76,4 +76,18 @@ elseif F == "groupaistatebesiege" then
         self._enemies_spawned_assault = 0
         self._enemies_killed_assault = 0
     end)
+
+    function GroupAIStateBesiege:_draw_spawn_points()
+        local all_areas = self._area_data
+        if all_areas then
+            for seg_id, area_data in pairs(all_areas) do
+                local area_spawn_points = area_data.spawn_points
+                if area_spawn_points then
+                    for _, sp_data in ipairs(area_spawn_points) do
+                        Application:draw_sphere(sp_data.pos, 220, 0.1, 0.4, 0.6)
+                    end
+                end
+            end
+        end
+    end
 end
