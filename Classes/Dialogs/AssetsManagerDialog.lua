@@ -275,7 +275,7 @@ function AssetsManagerDialog:toggle_used()
         local mod, data = project:get_mod_and_config()
         local level = project:current_level()
         local add = project:read_xml(level._add_path) or {_meta = "add", directory = "assets"}
-    
+
         for k,v in ipairs(add) do
             if v.path == name then
                 v.used = used
@@ -653,7 +653,7 @@ function AssetsManagerDialog:_make_package_report(package)
 
             pos = pos + Vector3(bsr, 0, 0)
 
-            
+
             if math.fmod(i, prow) == 0 then
                 c_rad = bsr * 2
 
@@ -897,16 +897,16 @@ function AssetsManagerDialog:add_package(package)
     local level = self._current_level
     level.packages = level.packages or {}
     table.insert(level.packages, package)
-    PackageManager:set_resource_loaded_clbk(Idstring(UNIT), nil)
-    if PackageManager:package_exists(package.."_init") and not PackageManager:loaded(package.."_init") then
+    -- PackageManager:set_resource_loaded_clbk(Idstring(UNIT), nil)
+    if  not PackageManager:loaded(package.."_init") then
         PackageManager:load(package.."_init")
     end
-    if PackageManager:package_exists(package) and not PackageManager:loaded(package) then
+    if not PackageManager:loaded(package) then
         PackageManager:load(package)
     else
         BLE:log("[Warning] Something went wrong in AssetsManagerDialog:add_package_dialog")
     end
-    PackageManager:set_resource_loaded_clbk(Idstring(UNIT), ClassClbk(managers.sequence, "clbk_pkg_manager_unit_loaded"))
+    -- PackageManager:set_resource_loaded_clbk(Idstring(UNIT), ClassClbk(managers.sequence, "clbk_pkg_manager_unit_loaded"))
     project:save_main_xml(self._tbl._data)
     project:reload_mod(self._tbl._data.name)
     self:reload()

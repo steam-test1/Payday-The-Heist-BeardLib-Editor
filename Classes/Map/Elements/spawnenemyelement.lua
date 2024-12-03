@@ -39,21 +39,10 @@ function EditorSpawnEnemyDummy:test_element(loop)
 		return
 	end
 
-	if self._element.values.enemy ~= "none" and managers.groupai:state():is_AI_enabled() then
-		self:stop_test_element(loop)
-
-		local unit = safe_spawn_unit(Idstring(self._element.values.enemy), self._unit:position(), self._unit:rotation())
-		if not unit then
-			return
-		end
-		table.insert(self._enemies, unit)
-		unit:brain():set_logic("inactive", nil)
-		local team_id = self:_resolve_team(unit)
-		managers.groupai:state():set_char_team(unit, team_id)
-		local action_desc = ElementSpawnEnemyDummy._create_action_data(self:get_spawn_anim())
-
-		unit:movement():action_request(action_desc)
-		unit:movement():set_position(unit:position())
+	if self._element.values.enemy ~= "none" then
+		local enemy = safe_spawn_unit(Idstring(self._element.values.enemy), self._unit:position(), self._unit:rotation())
+		table.insert(self._enemies, enemy)
+		ElementSpawnEnemyDummy.produce_test(self._element, enemy)
 	end
 end
 
@@ -70,7 +59,7 @@ end
 
 function EditorSpawnEnemyDummy:_build_panel()
 	self:_create_panel()
-	self:PathCtrl("enemy", "unit", "/ene_", BLE.Utils.EnemyBlacklist, {
+	self:PathCtrl("enemy", "unit", "/enemies/", BLE.Utils.EnemyBlacklist, {
 		extra_info = {load = true}
 	})
 	self:BooleanCtrl("participate_to_group_ai")

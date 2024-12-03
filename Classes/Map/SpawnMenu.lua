@@ -46,7 +46,7 @@ function SpawnMenu:begin_spawning(unit, pos, rot, orientate)
         if orientate then
             self._currently_orientating = unit
         end
-        self:SetTitle("Press: LMB to spawn, RMB to cancel") 
+        self:SetTitle("Press: LMB to spawn, RMB to cancel")
     end
     if PackageManager:has(Idstring("unit"), unit:id()) then
         begin_spawning()

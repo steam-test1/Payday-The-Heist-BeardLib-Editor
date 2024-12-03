@@ -183,9 +183,6 @@ function Mission:set_element(element, old_script_name)
 		local script_element = script._elements[id]
 		script_element._values = _G.deep_clone(element.values)
 
-		if script_element._finalize_values then
-			script_element:_finalize_values(script_element._values)
-		end
 		if script_element.on_script_activated then
 			script_element:on_script_activated()
 		end

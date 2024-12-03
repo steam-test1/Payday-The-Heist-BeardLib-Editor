@@ -23,7 +23,7 @@ end
 
 function EditorSpawnCivilian:_build_panel()
 	self:_create_panel()
-	self:PathCtrl("enemy", "unit", '/civ_', "dummy_corpse", {
+	self:PathCtrl("enemy", "unit", '/civilians/', "dummy_corpse", {
 		text = "Civilian",
 		extra_info = {load = true}
 	})
@@ -44,7 +44,23 @@ function EditorSpawnCivilian:_build_panel()
 end
 
 function EditorSpawnCivilian:test_element()
-	EditorSpawnEnemyDummy.test_element(self)
+	if not managers.navigation:is_data_ready() then
+		BLE.Utils:Notify(
+            "ERROR!",
+            "Can't test spawn unit without ready navigation data (AI-graph)"
+        )
+		return
+	end
+
+	if not self._unit then
+		return
+	end
+
+	if self._element.values.enemy ~= "none" then
+		local enemy = safe_spawn_unit(Idstring(self._element.values.enemy), self._unit:position(), self._unit:rotation())
+		table.insert(self._enemies, enemy)
+		ElementSpawnEnemyDummy.produce_test(self._element, enemy)
+	end
 end
 
 function EditorSpawnCivilian:stop_test_element()

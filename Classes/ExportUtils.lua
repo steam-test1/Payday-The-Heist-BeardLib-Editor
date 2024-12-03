@@ -27,7 +27,7 @@ function Utils:init(config)
     if config.fallback_to_db_assets then
         self._fallback_to_db_assets = true
     end
-    
+
     self._load_settings = BLE.Options:GetValue("Map/AssetLoadSettings")
 end
 
@@ -121,7 +121,7 @@ function Utils:GetDependencies(ext, path, ignore_default, exclude, extra_info)
     for _, file in pairs(temp) do
         local ext = file._meta
         local file_id, ext_id = file.path:id(), ext:id()
-        if not ignore_default or not (Global.DefaultAssets[ext] and Global.DefaultAssets[ext][file.path] and dyn:has_resource(ext_id, file_id, dyn.DYN_RESOURCES_PACKAGE)) then
+        if not ignore_default or not (Global.DefaultAssets[ext] and Global.DefaultAssets[ext][file.path]) then
             local is_bnk = ext == "bnk"
             local success
             if is_bnk then
@@ -213,7 +213,7 @@ function Utils:ReadUnit(unit, config, exclude, extra_info)
                     end
                 end
             end
-        end       
+        end
 	end
 	return node ~= nil
 end
@@ -261,7 +261,7 @@ function Utils:ReadAnimationStateMachine(path, config, exclude, extra_info)
     self:Add(config, "animation_state_machine", path, exclude, extra_info)
 	local node = self:ParseXml("animation_state_machine", path)
     if node then
-        for anim_child in node:children() do    
+        for anim_child in node:children() do
             if anim_child:name() == "states" then
                 self:ReadAnimationStates(anim_child:parameter("file"), config, exclude, {file = path..".animation_state_machine", where = "states node"})
             end
@@ -375,7 +375,7 @@ function Utils:ReadEffect(path, config, exclude, extra_info)
                 if not self:ReadEffect(eff_child:parameter("name"), config, exclude, {file = file_ext, where = "use node"}) and rom then
                     return false
                 end
-            end 
+            end
         end
     end
     return node ~= nil
