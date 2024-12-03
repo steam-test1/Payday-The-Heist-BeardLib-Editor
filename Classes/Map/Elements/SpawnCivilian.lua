@@ -9,6 +9,9 @@ EditorSpawnCivilian.INSTANCE_VAR_NAMES = {
 	}
 }
 EditorSpawnCivilian._enemies = {}
+EditorSpawnCivilian.civilian_spawn = {
+
+}
 function EditorSpawnCivilian:create_element()
 	self.super.create_element(self)
 	self._element.class = "ElementSpawnCivilian"
@@ -24,20 +27,20 @@ function EditorSpawnCivilian:_build_panel()
 		text = "Civilian",
 		extra_info = {load = true}
 	})
-	self:ComboCtrl("state", table.list_add(clone(CopActionAct._act_redirects.civilian_spawn), {"none"}), {
-		not_close = true, 
-        searchbox = true, 
-        fit_text = true, 
-        on_callback = function(item) 
+	self:ComboCtrl("state", table.list_add(clone(CopActionAct._civilian_actions), {"none"}), {
+		not_close = true,
+        searchbox = true,
+        fit_text = true,
+        on_callback = function(item)
             self:set_element_data(item)
             self:test_element(item)
-        end, 
+        end,
         close_callback = ClassClbk(self, "stop_test_element")
 	})
 	local pickups = table.map_keys(tweak_data.pickups)
 	table.insert(pickups, "none")
 	self:ComboCtrl("force_pickup", pickups)
-	self:ComboCtrl("team", table.list_add({"default"}, tweak_data.levels:get_team_names_indexed()), {help = "Select the character's team."})
+	-- self:ComboCtrl("team", table.list_add({"default"}, tweak_data.levels:get_team_names_indexed()), {help = "Select the character's team."})
 end
 
 function EditorSpawnCivilian:test_element()

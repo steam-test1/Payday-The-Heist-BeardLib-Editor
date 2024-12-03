@@ -19,7 +19,7 @@ EditorSpecialObjective._enemies = {}
 EditorSpecialObjective._nav_link_filter = {}
 function EditorSpecialObjective:create_element()
 	self.super.create_element(self)
-	
+
 	self._element.class = "ElementSpecialObjective"
 	self._element.values.ai_group = "none"
 	self._element.values.align_rotation = true
@@ -47,7 +47,7 @@ function EditorSpecialObjective:create_element()
 	self._element.values.SO_access = "0"
 	self._element.values.followup_elements = {}
 	self._element.values.spawn_instigator_ids = {}
-	self._element.values.test_unit = "default"	
+	self._element.values.test_unit = "default"
     self._element.values.interrupt_objective = false
 end
 
@@ -241,7 +241,7 @@ function EditorSpecialObjective:test_element(item, loop)
     self._so_class._values.align_rotation = nil
 
     self._so_class:on_executed(enemy)
-    
+
     if self._class_group:GetItemValue("LoopTestAnimation") then
         self._so_class:add_event_callback("complete", ClassClbk(self, "test_element", item, true))
     end
@@ -300,10 +300,10 @@ function EditorSpecialObjective:generate_search_position(item)
 
         local new_pos = self._element.values.position + displacement
         local nav_tracker = managers.navigation._quad_field:create_nav_tracker(new_pos, true)
-        
+
         new_pos = nav_tracker:field_position()
         mvector3.set_static(new_pos, math.round(new_pos.x), math.round(new_pos.y), math.round(new_pos.z))
-        
+
         managers.navigation._quad_field:destroy_nav_tracker(nav_tracker)
 
         self._element.values.search_position = new_pos
@@ -322,13 +322,13 @@ function EditorSpecialObjective:apply_preset(item)
 	local selection = item:SelectedItem()
 	BLE.Utils:YesNoQuestion("This will apply the access flag preset " .. (selection or ""), function()
 		if selection == "clear all" then
-			self._element.values.SO_access = managers.navigation:convert_access_filter_to_string({})
+			self._element.values.SO_access = managers.navigation:convert_SO_access_filter(tostring({}))
 		elseif selection == "select all" then
-			self._element.values.SO_access = managers.navigation:convert_access_filter_to_string(NavigationManager.ACCESS_FLAGS)
+			self._element.values.SO_access = managers.navigation:convert_SO_access_filter(tostring(NavigationManager.ACCESS_FLAGS))
         elseif selection == "civilians" then
-			self._element.values.SO_access = managers.navigation:convert_access_filter_to_string({"civ_male", "civ_female"})
+			self._element.values.SO_access = managers.navigation:convert_SO_access_filter(tostring({"civ_male", "civ_female"}))
         elseif selection == "team ai" then
-			self._element.values.SO_access = managers.navigation:convert_access_filter_to_string({"teamAI1", "teamAI2", "teamAI3", "teamAI4"})
+			self._element.values.SO_access = managers.navigation:convert_SO_access_filter(tostring({"teamAI1", "teamAI2", "teamAI3", "teamAI4"}))
         elseif selection == "all cops" then
             local filter = {
                 "cop",
@@ -340,21 +340,21 @@ function EditorSpecialObjective:apply_preset(item)
                 "tank",
                 "taser"
             }
-			self._element.values.SO_access = managers.navigation:convert_access_filter_to_string(filter)
+			self._element.values.SO_access = managers.navigation:convert_SO_access_filter(tostring(filter))
         elseif selection == "all except civs" then
             local filter = clone(NavigationManager.ACCESS_FLAGS)
             table.delete(filter, "civ_male")
             table.delete(filter, "civ_female")
-			self._element.values.SO_access = managers.navigation:convert_access_filter_to_string(filter)
+			self._element.values.SO_access = managers.navigation:convert_SO_access_filter(tostring(filter))
 		end
 	end)
 end
 
 function EditorSpecialObjective:manage_flags()
     BLE.SelectDialog:Show({
-        selected_list = managers.navigation:convert_access_filter_to_table(self._element.values.SO_access),
+        selected_list = managers.navigation:convert_SO_access_filter(self._element.values.SO_access),
         list = NavigationManager.ACCESS_FLAGS,
-        callback = function(list) self._element.values.SO_access = managers.navigation:convert_access_filter_to_string(list) end
+        callback = function(list) self._element.values.SO_access = managers.navigation:convert_SO_access_filter(tostring(list)) end
     })
 end
 
@@ -382,8 +382,8 @@ function EditorSpecialObjective:UnitCtrl(value_name, typ, check_match, check_not
 	end
 	opt.not_close = true
     local tb = (opt.group or self._holder):pathbox(value_name, ClassClbk(self, "set_element_data"), self:ItemData(opt)[value_name], typ, opt)
-    local reset = tb:tb_imgbtn("Reset", function() 
-        tb:SetValue("default", true) 
+    local reset = tb:tb_imgbtn("Reset", function()
+        tb:SetValue("default", true)
     end, nil, BLE.Utils.EditorIcons.cross, {
         help = "Reset Unit",
         size = tb.size * 1.75,
@@ -391,14 +391,14 @@ function EditorSpecialObjective:UnitCtrl(value_name, typ, check_match, check_not
 			item:SetPositionByString("RightCentery")
 			item:Move(-6)
 		end
-    }) 
+    })
     reset:SetIndex(1)
     return tb
 end
 
 function EditorSpecialObjective:_build_panel()
 	self:_create_panel()
-	self._nav_link_filter = managers.navigation:convert_access_filter_to_table(self._element.values.SO_access)
+	self._nav_link_filter = managers.navigation:convert_SO_access_filter(tonumber(self._element.values.SO_access))
 	if type_name(self._element.values.SO_access) == "number" then
 		self._element.values.SO_access = tostring(self._element.values.SO_access)
 	end
@@ -426,14 +426,14 @@ function EditorSpecialObjective:_build_panel()
 	local none = {"none"}
 	self:ComboCtrl("ai_group", table.list_add(none, ElementSpecialObjective._AI_GROUPS), {help = "Select an ai group."})
     self:ComboCtrl("so_action", table.list_add(none, CopActionAct._act_redirects.SO, CopActionAct._act_redirects.script, self._AI_SO_types), {
-        help = "Select a action that the unit should start with.", 
-        not_close = true, 
-        searchbox = true, 
-        fit_text = true, 
-        on_callback = function(item) 
+        help = "Select a action that the unit should start with.",
+        not_close = true,
+        searchbox = true,
+        fit_text = true,
+        on_callback = function(item)
             self:set_element_data(item)
             self:test_element(item)
-        end, 
+        end,
         close_callback = ClassClbk(self, "stop_test_element")
     })
     local path_names = {}
@@ -451,12 +451,12 @@ function EditorSpecialObjective:_build_panel()
 	self:ComboCtrl("interaction_voice", table.list_add(none, ElementSpecialObjective._INTERACTION_VOICES), {help = "Select what voice to use when interacting with the character."})
 	self:NumberCtrl("search_distance", {min = 0, help = "Used to specify the distance to use when searching for an AI"})
 	self:NumberCtrl("interrupt_dis", {
-		min = -1, 
-		help = "Interrupt if a threat is detected closer than this distance (meters). -1 means at any distance. For non-visible threats this value is multiplied with 0.7.", 
+		min = -1,
+		help = "Interrupt if a threat is detected closer than this distance (meters). -1 means at any distance. For non-visible threats this value is multiplied with 0.7.",
 		text = "Interrupt Distance:"
 	})
-	self:NumberCtrl("interrupt_dmg", {min = -1, 
-		help = "Interrupt if total damage received as a ratio of total health exceeds this ratio. value: 0-1.", 
+	self:NumberCtrl("interrupt_dmg", {min = -1,
+		help = "Interrupt if total damage received as a ratio of total health exceeds this ratio. value: 0-1.",
 		text = "Interrupt Damage:"
 	})
 	self:NumberCtrl("interval", {min = -1, help = "Used to specify how often the SO should search for an actor. A negative value means it will check only once."})

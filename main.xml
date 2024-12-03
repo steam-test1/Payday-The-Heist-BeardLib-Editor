@@ -281,15 +281,9 @@
     </Options>
     <AddFiles directory="Assets">
         <material_config path="core/material_configs/hub_elements"/>
-        <dds path="textures/editor_logo"/>
-        <dds path="textures/editor_icons_df"/>
-        <dds path="textures/element_icons_df"/>
-
-        <unit_obj path="units/mission_element/element"/>
-        <unit_obj path="units/civilian_element/element"/>
-        <unit_obj path="units/player_element/element"/>
-        <unit_obj path="units/enemy_element/element"/>
-        <unit_obj path="units/dev_tools/level_tools/ai_coverpoint"/>
+        <texture path="textures/editor_logo"/>
+        <texture path="textures/editor_icons_df"/>
+        <texture path="textures/element_icons_df"/>
 
         <unit_obj path="core/units/environment_area/environment_area"/>
         <unit_obj path="core/units/dome_occ_shape/dome_occ_shape"/>
@@ -303,6 +297,19 @@
 
         <unit path="core/units/nav_surface/nav_surface"/>
         <object path="core/units/nav_surface/nav_surface"/>
+
+        <!-- Mission Element Unit -->
+        <unit path="core/units/locator/locator" force="true"/>
+        <model path="core/units/locator/locator" force="true"/>
+        <object path="core/units/locator/locator" force="true"/>
+        <!-- Spawn Enemy Element Unit -->
+        <unit path="units/pickups/ammo_test/ammo_test" force="true"/>
+        <model path="units/pickups/ammo_test/ammo_test" force="true"/>
+        <object path="units/pickups/ammo_test/ammo_test" force="true"/>
+        <!-- Spawn Civilian Element Unit -->
+        <unit path="core/units/effect_gizmo/effect_gizmo" force="true"/>
+        <model path="core/units/effect_gizmo/effect_gizmo" force="true"/>
+        <object path="core/units/effect_gizmo/effect_gizmo" force="true"/>
     </AddFiles>
     <MissionElements>
         <!--Custom Elements-->

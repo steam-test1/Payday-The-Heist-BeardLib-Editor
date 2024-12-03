@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<tweaks>
+    <tweak version="2" name="guis/preload_menus" extension="gui">
+		<search>
+			<gui/>
+		</search>
+
+		<target mode="attach">
+
+            <preload texture="textures/editor_icons_df"/>
+        </target>
+	</tweak>
+</tweaks>

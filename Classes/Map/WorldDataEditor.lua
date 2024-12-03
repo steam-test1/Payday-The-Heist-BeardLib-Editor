@@ -6,7 +6,7 @@ function WData:init(parent, menu)
     self.layers = {
         main = MainLayerEditor:new(self),
         environment = EnvironmentLayerEditor:new(self),
-        sound = SoundLayerEditor:new(self), 
+        sound = SoundLayerEditor:new(self),
         portal = PortalLayerEditor:new(self),
         ai = AiLayerEditor:new(self),
         brush = BrushLayerEditor:new(self),
@@ -141,7 +141,7 @@ function WData:build_groups_layer_menu()
                 if editor_group.units then
                     local group = groups:group(editor_group.name, {text = editor_group.name, auto_align = false, max_height = 400, inherit_values = {size = self._menu.size * 0.8}, closed = true})
                     local toolbar = group:GetToolbar({auto_align = false})
-                    toolbar:tb_imgbtn("Remove", function() 
+                    toolbar:tb_imgbtn("Remove", function()
                         BLE.Utils:YesNoQuestion("This will delete the group", function()
                             self:GetPart("static"):remove_group(nil, editor_group)
                             self:build_menu("groups")
@@ -154,8 +154,8 @@ function WData:build_groups_layer_menu()
                         end})
                     end, nil, icons.pen)
                     toolbar:tb_imgbtn("SelectGroup", ClassClbk(self:GetPart("static"), "select_group", editor_group), nil, icons.select)
-                    toolbar:tb_imgbtn("SetVisible", function(item) 
-                        self:GetPart("static"):toggle_group_visibility(editor_group) 
+                    toolbar:tb_imgbtn("SetVisible", function(item)
+                        self:GetPart("static"):toggle_group_visibility(editor_group)
                         item.enabled_alpha = editor_group.visible and 1 or 0.5
                         item:SetEnabled(item.enabled)
                     end, nil, icons.eye, {enabled_alpha = editor_group.visible ~= nil and (editor_group.visible and 1 or 0.5) or 1})

@@ -101,7 +101,7 @@ function MissionScriptEditor:_create_panel()
 	local element = self._element.class:gsub("Element", "") .. ""
 	self._class_group = self._holder:group(element)
 	SE:SetTitle(element)
-	quick_buttons:s_btn("Deselect", ClassClbk(self, "deselect_element"))    
+	quick_buttons:s_btn("Deselect", ClassClbk(self, "deselect_element"))
 	quick_buttons:s_btn("Delete", ClassClbk(SE, "delete_selected_dialog"))
     quick_buttons:s_btn("CreatePrefab", ClassClbk(SE, "add_selection_to_prefabs"))
 	quick_buttons:s_btn("Execute", ClassClbk(managers.mission, "execute_element", self._element))
@@ -136,7 +136,7 @@ function MissionScriptEditor:_create_panel()
 		on_exec.orig.alternative = "none"
 		local alts = clone(self.ON_EXECUTED_ALTERNATIVES)
 		table.insert(alts, "none")
-		on_exec.combo_items_func = function() return alts end 
+		on_exec.combo_items_func = function() return alts end
 		table.insert(on_exec.values, {name = "Alternative", key = "alternative"})
 	end
 	self:BuildElementsManage("on_executed", on_exec, nil, ClassClbk(self, "get_on_executed_units"), {
@@ -189,17 +189,20 @@ end
 
 function MissionScriptEditor:update_draw_units(draw)
 	draw.units = {}
-	for k, v in pairs(self._element.values[draw.key]) do
-		local id = v
-		if type(id) == "table" then
-			id = id[draw.id_key]
-		end
-		if type(id) == "number" then
-			local unit = managers.worlddefinition:get_unit(id)
-			if alive(unit) then
-				draw.units[unit:unit_data().unit_id] = unit
-			else
-				table.remove(self._element.values[draw.key], k)
+	local crashfix1 = self._element.values[draw.key]
+	if crashfix1 then
+		for k, v in pairs(crashfix1) do
+			local id = v
+			if type(id) == "table" then
+				id = id[draw.id_key]
+			end
+			if type(id) == "number" then
+				local unit = managers.worlddefinition:get_unit(id)
+				if alive(unit) then
+					draw.units[unit:unit_data().unit_id] = unit
+				else
+					table.remove(self._element.values[draw.key], k)
+				end
 			end
 		end
 	end
@@ -424,7 +427,7 @@ function MissionScriptEditor:BuildUnitsManage(value_name, table_data, update_clb
 	opt.group = nil
 	local button = (group or self._class_group):button("Manage"..value_name.."List", ClassClbk(self, "OpenUnitsManageDialog", {
 		value_name = value_name,
-		update_clbk = update_clbk, 
+		update_clbk = update_clbk,
 		check_unit = opt.check_unit,
 		not_table = opt.not_table,
 		units = opt.units,
@@ -451,8 +454,8 @@ function MissionScriptEditor:BuildInstancesManage(value_name, table_data, update
 	local text = opt.text
 	opt.group = nil
 	local button = (group or self._class_group):button("Manage"..value_name.."List", ClassClbk(self, "OpenInstancesManageDialog", {
-		value_name = value_name, 
-		update_clbk = update_clbk, 
+		value_name = value_name,
+		update_clbk = update_clbk,
 		table_data = table_data
 	}), table.merge({text = "Manage "..string.pretty(value_name, true).." List(instances)", help = "Decide which instances are in this list"}, opt))
 	if not group then
@@ -638,7 +641,7 @@ function MissionScriptEditor:OpenElementsManageDialog(params)
 		end
 	end
 
-	self:OpenManageListDialog(params, elements, 
+	self:OpenManageListDialog(params, elements,
 		function(element)
 			return element.editor_name .. " - " .. element.class:gsub("Element", "") .. " [" .. element.id .."]"
 		end,
@@ -679,7 +682,7 @@ function MissionScriptEditor:OpenUnitsManageDialog(params)
 end
 
 function MissionScriptEditor:OpenInstancesManageDialog(params)
-	self:OpenManageListDialog(params, managers.world_instance:instance_names_by_script(self._element.script), 
+	self:OpenManageListDialog(params, managers.world_instance:instance_names_by_script(self._element.script),
 		function(instance) return instance end,
 		function(element) return true end
 	)
@@ -810,7 +813,7 @@ function MissionScriptEditor:ListSelectorOpen(params)
     BLE.SelectDialog:Show({
         selected_list = params.selected_list,
         list = params.list,
-        callback = params.callback or function(list) 
+        callback = params.callback or function(list)
  			params.data[params.value_name] = #list > 0 and list or nil
         end
     })

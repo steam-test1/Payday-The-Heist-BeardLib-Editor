@@ -6,7 +6,7 @@ function QuickAccess:init(parent, menu)
     local size = BLE.Options:GetValue("QuickAccessToolbarSize")
     local toolbar_position = BLE.Options:GetValue("ToolbarPosition")
     local reversed = BLE.Options:GetValue("GUIOnRight")
-   
+
     if toolbar_position == 1 then
         position = reversed and "TopLeft" or "TopRight"
     elseif toolbar_position == 2 then
@@ -73,7 +73,7 @@ function QuickAccess:build_values(parent)
     for _, value in pairs(self._values) do
         local t = self:NumberBox(parent, value.name, value)
     end
-    
+
     self:AlignItems(parent)
 end
 
@@ -161,7 +161,7 @@ function QuickAccess:AlignItems(panel, additive)
         else
             max_w = item:Right()
         end
-        
+
     end
 
     local items = panel:Items()
@@ -232,7 +232,7 @@ end
 function QuickAccess:update_widget_toggle(item)
     local name = item.name:gsub("_widget_toggle", "")
     local enabled = self._parent[name.."_widget_enabled"](self._parent)
-    
+
     item:SetBorder({bottom = enabled})
     item.img:set_alpha(enabled and 1 or 0.5)
 end
@@ -251,7 +251,7 @@ function QuickAccess:toggle_local_move() self._parent:toggle_local_move() end
 function QuickAccess:deselect_unit() BLE.Utils:GetPart("static"):deselect_unit() end
 function QuickAccess:drop_player() game_state_machine:current_state():freeflight_drop_player(self._parent._camera_pos, Rotation(self._parent._camera_rot:yaw(), 0, 0)) end
 
-function QuickAccess:open_teleport_menu(item) 
+function QuickAccess:open_teleport_menu(item)
     local items = {"default"}
     local bookmarks = managers.worlddefinition and managers.worlddefinition._world_data and managers.worlddefinition._world_data.camera_bookmarks
     if bookmarks then
@@ -267,7 +267,7 @@ function QuickAccess:open_teleport_menu(item)
     item.items = items
     item.ContextMenuCallback = item.ContextMenuCallback or function(self, item)
         if item == " -Selection- " then
-            BLE.Utils:GetPart("static"):KeyFPressed() 
+            BLE.Utils:GetPart("static"):KeyFPressed()
         else
             BLE.Utils:GetPart("world"):get_layer("main"):jump_to_bookmark(item)
         end

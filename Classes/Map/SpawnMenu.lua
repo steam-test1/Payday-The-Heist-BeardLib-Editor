@@ -27,7 +27,7 @@ end
 
 function SpawnMenu:begin_spawning_element(element)
     self._currently_spawning_element = element
-    self:begin_spawning("units/mission_element/element")
+    self:begin_spawning("core/units/locator/locator")
 end
 
 function SpawnMenu:begin_spawning(unit, pos, rot, orientate)
@@ -133,7 +133,7 @@ function SpawnMenu:update(t, dt)
         Application:draw_sphere(self._parent._spawn_position, 30, 0, 1, 0)
     elseif self._currently_orientating and self._parent:selected_unit() then
         local pos = self._parent:selected_unit():position()
-        mvector3.set(orient_pos, pos) 
+        mvector3.set(orient_pos, pos)
         mvector3.set(orient_pos, self._parent._spawn_position - orient_pos)
         mvector3.set_z(orient_pos, 0)
         mrotation.set_look_at(orient_rot, orient_pos, math.UP)

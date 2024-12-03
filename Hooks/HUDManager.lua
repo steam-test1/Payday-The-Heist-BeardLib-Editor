@@ -1,9 +1,8 @@
 Hooks:PostHook(HUDManager, "init", "EditorToggleFixInit", function(self)
     HUDManager.HIDEABLE_HUDS = {
-		[PlayerBase.PLAYER_INFO_HUD:key()] = true,
+		[PlayerBase.PLAYER_HUD:key()] = true,
 		[PlayerBase.PLAYER_INFO_HUD_FULLSCREEN:key()] = true,
-		[PlayerBase.PLAYER_DOWNED_HUD:key()] = true,
-		[Idstring("guis/mask_off_hud"):key()] = true
+		[PlayerBase.PLAYER_DOWNED_HUD:key()] = true
 	}
 
     self._visible_huds_states = {}

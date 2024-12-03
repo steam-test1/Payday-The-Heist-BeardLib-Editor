@@ -183,9 +183,9 @@ function Static:finish_grabbing()
     transform:SetEnabled(true)
 end
 
-function Static:deselect_unit(item) 
+function Static:deselect_unit(item)
     if not self._parent:get_dummy_or_grabbed_unit() and not self._parent:is_using_widget() then
-        self:set_unit(true) 
+        self:set_unit(true)
         self:GetPart("select"):reload_menus()
     end
 end
@@ -320,7 +320,7 @@ function Static:build_unit_editing()
     if not self:selected_unit() or not self:unit_value("name") then
         return
     end
-    
+
     local quick = self:GetItem("QuickActions")
     local tb = quick:GetToolbar()
 
@@ -987,15 +987,15 @@ function Static:set_selected_unit(unit, add, skip_menu, skip_recalc)
         local ud = unit:unit_data()
         if ud and ud.instance then
             if not unit:fake() then
-                local instance = ud.instance_data or managers.world_instance:get_instance_data_by_name(ud.instance)
-                local fake_unit
-                for _, u in pairs(self:selected_units()) do
-                    if u:fake() and u:object().name == ud.instance then
-                        fake_unit = u
-                        break
-                    end
-                end
-                unit = fake_unit or FakeObject:new(instance, {instance = true})
+                -- local instance = ud.instance_data or managers.world_instance:get_instance_data_by_name(ud.instance)
+                -- local fake_unit
+                -- for _, u in pairs(self:selected_units()) do
+                --     if u:fake() and u:object().name == ud.instance then
+                --         fake_unit = u
+                --         break
+                --     end
+                -- end
+                -- unit = fake_unit or FakeObject:new(instance, {instance = true})
                 units[1] = unit
             end
         end
@@ -1299,14 +1299,14 @@ function Static:build_links(id, match, element)
             end
         end
 
-        for _, instance in pairs(managers.world_instance:instance_data()) do
-            for _, link in pairs(managers.mission:get_links_paths_new(instance.name, Utils.LinkTypes.Instance, {{mission_element_data = element}})) do
-                local linking_from = link.location
-                linking_from = linking_from and " | " .. string.pretty2(linking_from) or ""
-                local fake_unit = FakeObject:new(instance, {instance = true})
-                create_link(instance_link_text(instance, linking_from), "instance_"..instance.name, linking_group, ClassClbk(self, "set_selected_unit", fake_unit))
-            end
-        end
+        -- for _, instance in pairs(managers.world_instance:instance_data()) do
+        --     for _, link in pairs(managers.mission:get_links_paths_new(instance.name, Utils.LinkTypes.Instance, {{mission_element_data = element}})) do
+        --         local linking_from = link.location
+        --         linking_from = linking_from and " | " .. string.pretty2(linking_from) or ""
+        --         local fake_unit = FakeObject:new(instance, {instance = true})
+        --         create_link(instance_link_text(instance, linking_from), "instance_"..instance.name, linking_group, ClassClbk(self, "set_selected_unit", fake_unit))
+        --     end
+        -- end
 
         if #linking_group:Items() == 0 then
             linking_group:Destroy()
@@ -1344,7 +1344,7 @@ end
 function Static:prepare_replace(names)
     local data = {}
 	local units = {}
-    
+
     for _, name in ipairs(names) do
         local slot = PackageManager:unit_data(name:id()):slot()
 
@@ -1381,14 +1381,14 @@ function Static:recreate_units(data)
         local unit_name = params.unit_data.name
 
         local new_unit = managers.editor:SpawnUnit(params.unit_data.name, params, true, params.unit_data.unit_id)
-        
+
         Utils:SetPosition(new_unit, params.unit_data.position, params.unit_data.rotation)
         table.insert(units, new_unit)
     end
 end
 
 function Static:on_reload_units()
-    Utils:YesNoQuestion("This will reload all selected units from disk. Changes that make the unit invalid can result in crashes.", function()  
+    Utils:YesNoQuestion("This will reload all selected units from disk. Changes that make the unit invalid can result in crashes.", function()
 		local names = {}
         for _, unit in ipairs(self:selected_units()) do
 			if alive(unit) and unit:unit_data() and not unit:fake() then
@@ -1692,26 +1692,26 @@ function Static:SpawnCopyData(copy_data, prefab)
                     missing_units[unit] = false
                 end
             end
-        elseif v.type == "instance" then
-            local folder = v.instance_data.folder
-            local instance_name = Path:GetFileName(Path:GetDirectory(folder)).."_"
-            local new_final_name
-            local i = instance_names[folder]
-            if not i then
-                local instance_names = managers.world_instance:instance_names()
-                i = 1
-                while(table.contains(instance_names, instance_name .. (i < 10 and "00" or i < 100 and "0" or "") .. i)) do
-                    i = i + 1
-                end
-            end
-            new_final_name = instance_name .. (i < 10 and "00" or i < 100 and "0" or "") .. i
-            instance_names[folder] = i + 1
+        -- elseif v.type == "instance" then
+        --     local folder = v.instance_data.folder
+        --     local instance_name = Path:GetFileName(Path:GetDirectory(folder)).."_"
+        --     local new_final_name
+        --     local i = instance_names[folder]
+        --     if not i then
+        --         local instance_names = managers.world_instance:instance_names()
+        --         i = 1
+        --         while(table.contains(instance_names, instance_name .. (i < 10 and "00" or i < 100 and "0" or "") .. i)) do
+        --             i = i + 1
+        --         end
+        --     end
+        --     new_final_name = instance_name .. (i < 10 and "00" or i < 100 and "0" or "") .. i
+        --     instance_names[folder] = i + 1
 
-			for _, link in pairs(managers.mission:get_links_paths_new(v.instance_data._id, Utils.LinkTypes.Instance, copy_data)) do
-                link.tbl[link.key] = new_final_name
-            end
-            v.instance_data.name = new_final_name
-            v.instance_data._id = nil
+		-- 	for _, link in pairs(managers.mission:get_links_paths_new(v.instance_data._id, Utils.LinkTypes.Instance, copy_data)) do
+        --         link.tbl[link.key] = new_final_name
+        --     end
+        --     v.instance_data.name = new_final_name
+        --     v.instance_data._id = nil
         end
 	end
     local function all_ok_spawn()
@@ -1879,7 +1879,7 @@ end
 function Static:can_do_physics(unit)
     if not unit then return false end
     if not alive(unit) then return false end
-    
+
     if unit:fake() then return false end
     if unit:mission_element() then return false end
     if unit:num_bodies() == 0 then return false end
@@ -1983,7 +1983,7 @@ function Static:stop_physics_simulation(accepted)
             end
         end
     end
-    
+
     self._selected_units = clone(self._physics_sim_units)
 
     self:update_positions()

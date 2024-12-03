@@ -699,12 +699,12 @@ function CubemapCreator:_move_output(output_path)
 	end
 
 	-- Delete temp tga
-	if not ovk or self._params.dome_occ ~= nil then
-		local tga_path = Path:Combine(self._params.source_path, self._params.output_name..".tga")
-		if FileIO:Exists(tga_path) then
-			FileIO:Delete(tga_path)
-		end
-	end
+	-- if not ovk or self._params.dome_occ ~= nil then
+	-- 	local tga_path = Path:Combine(self._params.source_path, self._params.output_name..".tga")
+	-- 	if FileIO:Exists(tga_path) then
+	-- 		FileIO:Delete(tga_path)
+	-- 	end
+	-- end
 
 	FileIO:MakeDir(self._params.output_path)
 	FileIO:MoveTo(self._params.source_path .. output_temp, final_path)

@@ -1,5 +1,5 @@
 ---Editor for BeardLib AddFiles module.
----This class DOES NOT deal with actual file system. 
+---This class DOES NOT deal with actual file system.
 ---We leave this job to the map makers, just place the assets in the directory you want and let the editor do the rest.
 ProjectAddFilesModule = ProjectAddFilesModule or class(ProjectModuleEditor)
 ProjectAddFilesModule.HAS_ID = true

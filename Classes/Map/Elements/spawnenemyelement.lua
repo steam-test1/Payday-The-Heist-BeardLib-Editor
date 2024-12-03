@@ -11,7 +11,7 @@ EditorSpawnEnemyDummy._enemies = {}
 function EditorSpawnEnemyDummy:create_element()
 	self.super.create_element(self)
 	self._element.class = "ElementSpawnEnemyDummy"
-	self._element.values.enemy = "units/payday2/characters/ene_swat_1/ene_swat_1"
+	self._element.values.enemy = "units/characters/enemies/swat/swat"
 	self._element.values.force_pickup = "none"
 	self._element.values.spawn_action = "none"
 	self._element.values.participate_to_group_ai = true
@@ -26,7 +26,7 @@ function EditorSpawnEnemyDummy:destroy()
 	self:stop_test_element()
 end
 
-function EditorSpawnEnemyDummy:test_element(loop) 
+function EditorSpawnEnemyDummy:test_element(loop)
 	if not managers.navigation:is_data_ready() then
 		BLE.Utils:Notify(
             "ERROR!",
@@ -74,32 +74,37 @@ function EditorSpawnEnemyDummy:_build_panel()
 		extra_info = {load = true}
 	})
 	self:BooleanCtrl("participate_to_group_ai")
-	local spawn_action_options = clone(CopActionAct._act_redirects.enemy_spawn)
+	local spawn_action_options = clone(ElementSpawnEnemyDummy._spawn_actions)
 	table.insert(spawn_action_options, "none")
 	self:ComboCtrl("spawn_action", spawn_action_options, {
-		not_close = true, 
-        searchbox = true, 
-        fit_text = true, 
-        on_callback = function(item) 
+		not_close = true,
+        searchbox = true,
+        fit_text = true,
+        on_callback = function(item)
             self:set_element_data(item)
             self:test_element(item)
-        end, 
+        end,
         close_callback = ClassClbk(self, "stop_test_element")
 	})
 	self:NumberCtrl("interval", {floats = 2, min = 0, help = "Used to specify how often this spawn can be used. 0 means no interval"})
 	self:NumberCtrl("voice", {
 		floats = 0,
 		min = 0,
-		max = 5, 
+		max = 5,
 		text = "Voice variant",
 		help = "1-5. 0 for random"
 	})
-	self:ComboCtrl("accessibility", ElementSpawnEnemyDummy.ACCESSIBILITIES, {help = "Only units with this movement type will be spawned from this element."})
+	local accessibility_options = {
+		"any",
+		"walk",
+		"acrobatic"
+	}
+	self:ComboCtrl("accessibility", accessibility_options, {help = "Only units with this movement type will be spawned from this element."})
 	local pickups = table.map_keys(tweak_data.pickups)
 	table.insert(pickups, "none")
 	table.insert(pickups, "no_pickup")
 	self:ComboCtrl("force_pickup", pickups)
-	self:ComboCtrl("team", table.list_add({"default"}, tweak_data.levels:get_team_names_indexed()), {help = "Select the character's team."})
+	-- self:ComboCtrl("team", table.list_add({"default"}, tweak_data.levels:get_team_names_indexed()), {help = "Select the character's team."})
 end
 
 

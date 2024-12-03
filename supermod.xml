@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <mod>
-	<tweak definition="physics.xml" />
+    <tweak definition="physics.xml" />
+    <tweak definition="editoricons.xml" />
     <wren>
         <init file="PhysicsPatcher"/>
     </wren>

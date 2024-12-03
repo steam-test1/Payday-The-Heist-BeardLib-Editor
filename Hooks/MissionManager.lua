@@ -98,7 +98,7 @@ function Mission:delete_element_id(continent, id)
 end
 
 function Mission:get_new_id(continent)
-	if continent then		
+	if continent then
 		self._ids = self._ids or {}
 		self._ids[continent] = self._ids[continent] or {}
 		local tbl = self._ids[continent]
@@ -123,8 +123,8 @@ end
 function Mission:_load_mission_file(name, file_dir, data)
 	self._missions = self._missions or {}
 	local file_path = file_dir .. data.file
-	self._missions[name] = self:_serialize_to_script("mission", file_path) 
-	for sname, mdata in pairs(self._missions[name]) do	
+	self._missions[name] = self:_serialize_to_script("mission", file_path)
+	for sname, mdata in pairs(self._missions[name]) do
 		mdata.name = sname
 		mdata.continent = name
 		self:_add_script(mdata)
@@ -145,7 +145,7 @@ function Mission:set_element(element, old_script_name)
 	if script then
 		local mission_script = self._missions[script._continent][script_name]
 
-		--TODO: Move multiple elements to different scripts without removing links		
+		--TODO: Move multiple elements to different scripts without removing links
 		if old_script and script_name ~= old_script_name then
 
 			local old_continent_name = old_script._continent
@@ -212,7 +212,7 @@ function Mission:add_element(element)
 		element.module = m
 	end
 	if element.script then
-		for _, miss in pairs(self._missions) do 
+		for _, miss in pairs(self._missions) do
 			if miss[element.script] then
 				script = miss[element.script]
 				script_name = element.script
@@ -251,7 +251,7 @@ function Mission:add_element(element)
 	end
 end
 
-function Mission:delete_element(id)	
+function Mission:delete_element(id)
 	self:delete_links(id, Utils.LinkTypes.Element)
 	for m_name, mission in pairs(self._missions) do
 		for s_name, script in pairs(mission) do
@@ -269,6 +269,12 @@ end
 
 _G.Hooks:PreHook(MissionScript, "init", "BeardLibEditorMissionScriptPreInit", function(self, data)
 	self._continent = data.continent
+	self._elements = {}
+	self._element_groups = {}
+	self._name = data.name
+	self._activate_on_parsed = data.activate_on_parsed
+	CoreDebug.cat_debug("gaspode", "New MissionScript:", self._name)
+	self:_create_elements(data.elements)
 end)
 
 function Mission:execute_element(element)
@@ -299,7 +305,7 @@ function Mission:get_executors(element)
 				if tbl.elements then
 					for i, s_element in pairs(tbl.elements) do
 						if s_element.values.on_executed then
-							for _, exec in pairs(s_element.values.on_executed) do									
+							for _, exec in pairs(s_element.values.on_executed) do
 								if exec.id == element.id then
 									tblinsert(executors, s_element)
 								end
@@ -307,7 +313,7 @@ function Mission:get_executors(element)
 						end
 					end
 				end
-			end	
+			end
 		end
 	end
 	return executors
@@ -342,14 +348,14 @@ local element_rules = {
 	tbl_keys = {
 		"elements",
 		"instigator_ids",
-		"spawn_unit_elements", 
+		"spawn_unit_elements",
 		"use_shape_element_ids",
 		"orientation_elements",
-		"rules_element_ids", 
-		"spawn_groups", 
-		"spawn_points", 
-		"followup_elements", 
-		"spawn_instigator_ids", 
+		"rules_element_ids",
+		"spawn_groups",
+		"spawn_points",
+		"followup_elements",
+		"spawn_instigator_ids",
 		"Stopwatch_value_ids",
 		"included_units",
 		"excluded_units",
@@ -448,7 +454,7 @@ function Mission:get_mission_element(id)
 	for _, script in pairs(self._missions) do
 		for _, tbl in pairs(script) do
 			if tbl.elements then
-				for i, element in pairs(tbl.elements) do	
+				for i, element in pairs(tbl.elements) do
 					if element.id == id then
 						return element
 					end
@@ -464,7 +470,7 @@ function Mission:get_used_units()
 	for _, script in pairs(self._missions) do
 		for _, tbl in pairs(script) do
 			if tbl.elements then
-				for i, element in pairs(tbl.elements) do	
+				for i, element in pairs(tbl.elements) do
 					local enemy = element.values.enemy
 					if enemy then
 						used_units[enemy] = used_units[enemy] and used_units[enemy] + 1 or 1
@@ -555,13 +561,13 @@ function MScript:create_mission_element_unit(element)
 	element.values.position = element.values.position or Vector3(math.random(9999), math.random(9999), 0)
 	element.values.rotation = type(element.values.rotation) ~= "number" and element.values.rotation or Rotation()
 
-	local unit_name = "units/mission_element/element"
+	local unit_name = "core/units/locator/locator"
 	if element.class == "ElementSpawnCivilian" then
-		unit_name = "units/civilian_element/element"
+		unit_name = "core/units/effect_gizmo/effect_gizmo"
 	elseif element.class == "ElementSpawnEnemyDummy" then
-		unit_name = "units/enemy_element/element"
-	elseif element.class == "ElementPlayerSpawner" then
-		unit_name = "units/player_element/element"
+		unit_name = "units/pickups/ammo_test/ammo_test"
+	-- elseif element.class == "ElementPlayerSpawner" then
+	-- 	unit_name = "units/player_element/element"
 	end
 	local unit = World:spawn_unit(Idstring(unit_name), element.values.position, element.values.rotation)
 
