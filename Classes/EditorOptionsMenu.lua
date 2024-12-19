@@ -242,7 +242,7 @@ function Options:set_color_group(item)
 end
 
 function Options:edit_color_group(name)
-	local list = {}  
+	local list = {}
 	for _, element in pairs(BLE._config.MissionElements) do
         local elem_name = element:gsub("Element", "")
 		local available = true
@@ -259,7 +259,7 @@ function Options:edit_color_group(name)
 	BLE.SelectDialog:Show({
         selected_list = self._elem_colors[name].elements,
         list = list,
-        callback = function(list) 
+        callback = function(list)
 			self._elem_colors[name].elements = list
 			self:build_color_groups()
 			BLE.Options:SetValue("Map/ElementColorGroups", self._elem_colors)
@@ -309,7 +309,7 @@ function Options:show_reset_dialog(menu)
 end
 
 function Options:Load(data)
-    
+
 end
 
 function Options:Destroy()

@@ -213,7 +213,7 @@ end
 
 function MissionEditor:disabled_update(t, dt)
     if self:Val("ShowElements") and self:Val("VisualizeDisabledElements") then
-        unit_disabled = Draw:brush(Color(0.15, 1, 0, 0))
+        local unit_disabled = Draw:brush(Color(0.15, 1, 0, 0))
 
         for _, unit in pairs(self:units()) do
             local element_unit = alive(unit) and unit:mission_element()

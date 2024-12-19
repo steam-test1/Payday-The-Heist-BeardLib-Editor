@@ -683,7 +683,7 @@ function WorldDef:make_unit(data, offset)
 		end
 
 		if MassUnitManager:can_spawn_unit(Idstring(name)) then
-			unit = MassUnitManager:spawn_unit(Idstring(name), data.position + offset, data.rotation)
+			-- unit = MassUnitManager:spawn_unit(Idstring(name), data.position + offset, data.rotation)
 		else
 			local failed = false
 			if not PackageManager:has(unit_ids, Idstring(name)) then

@@ -7,7 +7,8 @@ Hooks:PostHook(BLTNotificationsGui, "_setup", "BLESetup", function(self)
         h = 28,
         y = 8,
         x = self._beardlib_achievements:right() + 4,
-        color = self._beardlib_accent
+        color = self._beardlib_accent,
+        layer = 900
     })
     local data = BLE.Options:GetValue("LastLoaded")
     if data then
@@ -19,7 +20,8 @@ Hooks:PostHook(BLTNotificationsGui, "_setup", "BLESetup", function(self)
             h = 28,
             y = 8,
             x = self._beardlib_editor_menu:right() + 4,
-            color = self._beardlib_accent
+            color = self._beardlib_accent,
+            layer = 900
         })
     end
 end)
