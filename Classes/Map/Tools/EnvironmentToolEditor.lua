@@ -140,6 +140,7 @@ function EnvTool:build_menu()
     self._shadow_params.d3 = self:add_post_processors_param("shadow_processor", "shadow_rendering", "shadow_modifier", shadows:slider("d3", nil, 1, {text = "3rd slice depth end", min = 0, floats = 0, max = 1000000}))
     self._shadow_params.o2 = self:add_post_processors_param("shadow_processor", "shadow_rendering", "shadow_modifier", shadows:slider("o2", nil, 1, {text = "Blend overlap(2nd & 3rd)", min = 0, floats = 0,  max = 1000000}))
     self._shadow_params.o3 = self:add_post_processors_param("shadow_processor", "shadow_rendering", "shadow_modifier", shadows:slider("o3", nil, 1, {text = "Blend overlap(3rd & 4th)", min = 0, floats = 0, max = 1000000}))
+    self._shadow_params.f = self:add_post_processors_param("shadow_processor", "shadow_rendering", "shadow_modifier", shadows:slider("f", nil, 1, {text = "Fadeout distance", min = 0, floats = 0, max = 1000000}))
 
     -- local effects = self._holder:group("Effects", {max_height = 220})
 	-- local all_effects = managers.environment_effects:effects_names()
@@ -155,6 +156,7 @@ function EnvTool:build_menu()
     self:add_post_processors_param("shadow_processor", "shadow_rendering", "shadow_modifier", DummyItem:new("slice3"))
     self:add_post_processors_param("shadow_processor", "shadow_rendering", "shadow_modifier", DummyItem:new("shadow_slice_overlap"))
     self:add_post_processors_param("shadow_processor", "shadow_rendering", "shadow_modifier", DummyItem:new("shadow_slice_depths"))
+    self:add_post_processors_param("shadow_processor", "shadow_rendering", "shadow_modifier", DummyItem:new("shadow_fadeout"))
 
     self:database_load_env(env_path)
 
@@ -192,27 +194,26 @@ end
 
 function EnvTool:parse_shadow_data()
     local values = {}
-    values.slice0 = managers.viewport:get_environment_value(self._env_path, CoreEnvironmentFeeder.PostShadowSlice0Feeder.DATA_PATH_KEY)
-    values.slice1 = managers.viewport:get_environment_value(self._env_path, CoreEnvironmentFeeder.PostShadowSlice1Feeder.DATA_PATH_KEY)
-    values.slice2 = managers.viewport:get_environment_value(self._env_path, CoreEnvironmentFeeder.PostShadowSlice2Feeder.DATA_PATH_KEY)
-    values.slice3 = managers.viewport:get_environment_value(self._env_path, CoreEnvironmentFeeder.PostShadowSlice3Feeder.DATA_PATH_KEY)
-    values.shadow_slice_overlap = managers.viewport:get_environment_value(self._env_path, CoreEnvironmentFeeder.PostShadowSliceOverlapFeeder.DATA_PATH_KEY)
-    values.shadow_slice_depths = managers.viewport:get_environment_value(self._env_path, CoreEnvironmentFeeder.PostShadowSliceDepthsFeeder.DATA_PATH_KEY)
-    local block = self:convert_to_block(values)
-    self._shadow_blocks[self._env_path] = block
-    self:load_shadow_data(block)
+	local data = managers.viewport:get_environment_cache():environment(self._env_path):data_root().post_effect.shadow_processor.shadow_rendering.shadow_modifier
+	for key, value in pairs(data) do
+		values[key] = value
+	end
+	local block = self:convert_to_block(values)
+	self._shadow_blocks[self._env_path] = block
+	self:load_shadow_data(block)
 end
 
 function EnvTool:convert_to_block(values)
     local block = ShadowBlock:new()
-    block:set("d0", values.shadow_slice_depths.x)
-    block:set("d1", values.shadow_slice_depths.y)
-    block:set("d2", values.shadow_slice_depths.z)
-    block:set("d3", values.slice3.y)
-    block:set("o1", values.shadow_slice_overlap.x)
-    block:set("o2", values.shadow_slice_overlap.y)
-    block:set("o3", values.shadow_slice_overlap.z)
-    return block
+	block:set("d0", values.shadow_slice_depths.x)
+	block:set("d1", values.shadow_slice_depths.y)
+	block:set("d2", values.shadow_slice_depths.z)
+	block:set("d3", values.slice3.y)
+	block:set("o1", values.shadow_slice_overlap.x)
+	block:set("o2", values.shadow_slice_overlap.y)
+	block:set("o3", values.shadow_slice_overlap.z)
+	block:set("f", values.shadow_fadeout.x - block:get("d3"))
+	return block
 end
 
 local env_ids = Idstring("environment")
@@ -240,7 +241,7 @@ function EnvTool:load_env(env)
                 -- had_effects = true
             end
         end
-        -- self:parse_shadow_data()
+        self:parse_shadow_data()
         -- if not had_effects then
         --     self._environment_effects = {}
         -- end
@@ -522,26 +523,20 @@ end
 
 function EnvTool:shadow_feed_params(feed_params)
     local interface_params = self._posteffect.post_processors.shadow_processor.effects.shadow_rendering.modifiers.shadow_modifier.params
-    local d0 = interface_params.d0:Value()
-    local d1 = interface_params.d1:Value()
-    local d2 = interface_params.d2:Value()
-    local d3 = interface_params.d3:Value()
-    local o1 = interface_params.o1:Value()
-    local o2 = interface_params.o2:Value()
-    local o3 = interface_params.o3:Value()
-    local s0 = Vector3(0, d0, 0)
-    local s1 = Vector3(d0 - o1, d1, 0)
-    local s2 = Vector3(d1 - o2, d2, 0)
-    local s3 = Vector3(d2 - o3, d3, 0)
-    local shadow_slice_depths = Vector3(d0, d1, d2)
-    local shadow_slice_overlaps = Vector3(o1, o2, o3)
-    feed_params.slice0 = s0
-    feed_params.slice1 = s1
-    feed_params.slice2 = s2
-    feed_params.slice3 = s3
-    feed_params.shadow_slice_depths = shadow_slice_depths
-    feed_params.shadow_slice_overlap = shadow_slice_overlaps
-    return feed_params
+	local s0 = Vector3(0, interface_params.d0:get_value(), 0)
+	local s1 = Vector3(interface_params.d0:get_value() - interface_params.o1:get_value(), interface_params.d1:get_value(), 0)
+	local s2 = Vector3(interface_params.d1:get_value() - interface_params.o2:get_value(), interface_params.d2:get_value(), 0)
+	local s3 = Vector3(interface_params.d2:get_value() - interface_params.o3:get_value(), interface_params.d3:get_value(), 0)
+	local shadow_slice_depths = Vector3(interface_params.d0:get_value(), interface_params.d1:get_value(), interface_params.d2:get_value())
+	local shadow_slice_overlaps = Vector3(interface_params.o1:get_value(), interface_params.o2:get_value(), interface_params.o3:get_value())
+	feed_params.slice0 = s0
+	feed_params.slice1 = s1
+	feed_params.slice2 = s2
+	feed_params.slice3 = s3
+	feed_params.shadow_slice_depths = shadow_slice_depths
+	feed_params.shadow_slice_overlap = shadow_slice_overlaps
+	feed_params.shadow_fadeout = Vector3(interface_params.d3:get_value() - interface_params.f:get_value(), interface_params.d3:get_value(), 0)
+	return feed_params
 end
 
 function EnvTool:open_default_custom_environment()
